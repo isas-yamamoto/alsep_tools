@@ -113,8 +113,6 @@ int main(int argc, char** argv) {
   //initial value of Frame time error at last frame in one record
   uint64_t msec_of_year_fmax = 0;
 
-  //program util
-  int record_index = 0;
 
 
   // ----------------------------------------
@@ -198,7 +196,6 @@ int main(int argc, char** argv) {
 
       csv_output(pr, pf[i]);
     }
-    record_index++;
     msec_of_year_fmax = pf[i-1].msec_of_year;
     process_flag = 0;
   }
