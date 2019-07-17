@@ -2,9 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(alsep_tools, 0.4, yukio@planeta.sci.isas.jaxa.jp)
+AC_INIT(alsep_tools, 0.5, yukio@planeta.sci.isas.jaxa.jp)
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_HEADER([config.h])
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # Checks for programs.
 AC_PROG_CC
@@ -31,6 +32,7 @@ AC_CONFIG_FILES([Makefile
                  lib/Makefile
                  pgcopy/Makefile
                  script/Makefile
+                 csv/Makefile
                  sql/Makefile])
 AC_PROG_RANLIB
 AC_OUTPUT

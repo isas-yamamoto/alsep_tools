@@ -86,7 +86,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-subdir = lib
+bin_PROGRAMS = pse2csv$(EXEEXT) wtn2csv$(EXEEXT) wth2csv$(EXEEXT)
+subdir = csv
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -96,17 +97,17 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-libalsep_a_AR = $(AR) $(ARFLAGS)
-libalsep_a_LIBADD =
-am_libalsep_a_OBJECTS = error.$(OBJEXT) pse.$(OBJEXT) wtn.$(OBJEXT) \
-	wth.$(OBJEXT) util.$(OBJEXT)
-libalsep_a_OBJECTS = $(am_libalsep_a_OBJECTS)
+am__installdirs = "$(DESTDIR)$(bindir)"
+PROGRAMS = $(bin_PROGRAMS)
+am_pse2csv_OBJECTS = pse2csv.$(OBJEXT)
+pse2csv_OBJECTS = $(am_pse2csv_OBJECTS)
+pse2csv_DEPENDENCIES = ../lib/libalsep.a
+am_wth2csv_OBJECTS = wth2csv.$(OBJEXT)
+wth2csv_OBJECTS = $(am_wth2csv_OBJECTS)
+wth2csv_DEPENDENCIES = ../lib/libalsep.a
+am_wtn2csv_OBJECTS = wtn2csv.$(OBJEXT)
+wtn2csv_OBJECTS = $(am_wtn2csv_OBJECTS)
+wtn2csv_DEPENDENCIES = ../lib/libalsep.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -122,8 +123,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/error.Po ./$(DEPDIR)/pse.Po \
-	./$(DEPDIR)/util.Po ./$(DEPDIR)/wth.Po ./$(DEPDIR)/wtn.Po
+am__depfiles_remade = ./$(DEPDIR)/pse2csv.Po ./$(DEPDIR)/wth2csv.Po \
+	./$(DEPDIR)/wtn2csv.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -137,8 +138,9 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libalsep_a_SOURCES)
-DIST_SOURCES = $(libalsep_a_SOURCES)
+SOURCES = $(pse2csv_SOURCES) $(wth2csv_SOURCES) $(wtn2csv_SOURCES)
+DIST_SOURCES = $(pse2csv_SOURCES) $(wth2csv_SOURCES) \
+	$(wtn2csv_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -255,8 +257,13 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libalsep.a
-libalsep_a_SOURCES = define.h error.c error.h pse.c pse.h wtn.c wtn.h wth.c wth.h util.h util.c
+pse2csv_SOURCES = pse2csv.c
+pse2csv_LDADD = ../lib/libalsep.a
+wtn2csv_SOURCES = wtn2csv.c
+wtn2csv_LDADD = ../lib/libalsep.a
+wth2csv_SOURCES = wth2csv.c
+wth2csv_LDADD = ../lib/libalsep.a
+AM_CPPFLAGS = -I$(top_srcdir)/lib
 all: all-am
 
 .SUFFIXES:
@@ -270,9 +277,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign lib/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign csv/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign lib/Makefile
+	  $(AUTOMAKE) --foreign csv/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -290,14 +297,60 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p \
+	  ; then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' \
+	    -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
+	; done
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' \
+	`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
-libalsep.a: $(libalsep_a_OBJECTS) $(libalsep_a_DEPENDENCIES) $(EXTRA_libalsep_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libalsep.a
-	$(AM_V_AR)$(libalsep_a_AR) libalsep.a $(libalsep_a_OBJECTS) $(libalsep_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libalsep.a
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+pse2csv$(EXEEXT): $(pse2csv_OBJECTS) $(pse2csv_DEPENDENCIES) $(EXTRA_pse2csv_DEPENDENCIES) 
+	@rm -f pse2csv$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(pse2csv_OBJECTS) $(pse2csv_LDADD) $(LIBS)
+
+wth2csv$(EXEEXT): $(wth2csv_OBJECTS) $(wth2csv_DEPENDENCIES) $(EXTRA_wth2csv_DEPENDENCIES) 
+	@rm -f wth2csv$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(wth2csv_OBJECTS) $(wth2csv_LDADD) $(LIBS)
+
+wtn2csv$(EXEEXT): $(wtn2csv_OBJECTS) $(wtn2csv_DEPENDENCIES) $(EXTRA_wtn2csv_DEPENDENCIES) 
+	@rm -f wtn2csv$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(wtn2csv_OBJECTS) $(wtn2csv_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -305,11 +358,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/error.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pse.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wth.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wtn.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pse2csv.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wth2csv.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wtn2csv.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -418,8 +469,11 @@ distdir-am: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(PROGRAMS)
 installdirs:
+	for dir in "$(DESTDIR)$(bindir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -452,14 +506,12 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/error.Po
-	-rm -f ./$(DEPDIR)/pse.Po
-	-rm -f ./$(DEPDIR)/util.Po
-	-rm -f ./$(DEPDIR)/wth.Po
-	-rm -f ./$(DEPDIR)/wtn.Po
+		-rm -f ./$(DEPDIR)/pse2csv.Po
+	-rm -f ./$(DEPDIR)/wth2csv.Po
+	-rm -f ./$(DEPDIR)/wtn2csv.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -482,7 +534,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 
 install-html: install-html-am
 
@@ -505,11 +557,9 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/error.Po
-	-rm -f ./$(DEPDIR)/pse.Po
-	-rm -f ./$(DEPDIR)/util.Po
-	-rm -f ./$(DEPDIR)/wth.Po
-	-rm -f ./$(DEPDIR)/wtn.Po
+		-rm -f ./$(DEPDIR)/pse2csv.Po
+	-rm -f ./$(DEPDIR)/wth2csv.Po
+	-rm -f ./$(DEPDIR)/wtn2csv.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -525,22 +575,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-binPROGRAMS
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
-	clean-generic clean-noinstLIBRARIES cscopelist-am ctags \
-	ctags-am distclean distclean-compile distclean-generic \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am
+	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
+	distclean distclean-compile distclean-generic distclean-tags \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-binPROGRAMS install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 

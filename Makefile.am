@@ -1,1 +1,1 @@
-SUBDIRS=lib info pgcopy script sql
+SUBDIRS=lib info pgcopy script sql csv
