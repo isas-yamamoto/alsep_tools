@@ -99,13 +99,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_pse2csv_OBJECTS = pse2csv.$(OBJEXT)
+am_pse2csv_OBJECTS = pse2csv.$(OBJEXT) csv.$(OBJEXT)
 pse2csv_OBJECTS = $(am_pse2csv_OBJECTS)
 pse2csv_DEPENDENCIES = ../lib/libalsep.a
 am_wth2csv_OBJECTS = wth2csv.$(OBJEXT)
 wth2csv_OBJECTS = $(am_wth2csv_OBJECTS)
 wth2csv_DEPENDENCIES = ../lib/libalsep.a
-am_wtn2csv_OBJECTS = wtn2csv.$(OBJEXT)
+am_wtn2csv_OBJECTS = wtn2csv.$(OBJEXT) csv.$(OBJEXT)
 wtn2csv_OBJECTS = $(am_wtn2csv_OBJECTS)
 wtn2csv_DEPENDENCIES = ../lib/libalsep.a
 AM_V_P = $(am__v_P_@AM_V@)
@@ -123,8 +123,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/pse2csv.Po ./$(DEPDIR)/wth2csv.Po \
-	./$(DEPDIR)/wtn2csv.Po
+am__depfiles_remade = ./$(DEPDIR)/csv.Po ./$(DEPDIR)/pse2csv.Po \
+	./$(DEPDIR)/wth2csv.Po ./$(DEPDIR)/wtn2csv.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -257,9 +257,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pse2csv_SOURCES = pse2csv.c
+pse2csv_SOURCES = pse2csv.c csv.c
 pse2csv_LDADD = ../lib/libalsep.a
-wtn2csv_SOURCES = wtn2csv.c
+wtn2csv_SOURCES = wtn2csv.c csv.c
 wtn2csv_LDADD = ../lib/libalsep.a
 wth2csv_SOURCES = wth2csv.c
 wth2csv_LDADD = ../lib/libalsep.a
@@ -358,6 +358,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pse2csv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wth2csv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wtn2csv.Po@am__quote@ # am--include-marker
@@ -509,7 +510,8 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/pse2csv.Po
+		-rm -f ./$(DEPDIR)/csv.Po
+	-rm -f ./$(DEPDIR)/pse2csv.Po
 	-rm -f ./$(DEPDIR)/wth2csv.Po
 	-rm -f ./$(DEPDIR)/wtn2csv.Po
 	-rm -f Makefile
@@ -557,7 +559,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/pse2csv.Po
+		-rm -f ./$(DEPDIR)/csv.Po
+	-rm -f ./$(DEPDIR)/pse2csv.Po
 	-rm -f ./$(DEPDIR)/wth2csv.Po
 	-rm -f ./$(DEPDIR)/wtn2csv.Po
 	-rm -f Makefile

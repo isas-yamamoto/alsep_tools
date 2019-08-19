@@ -11,105 +11,53 @@
 #include <string.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <libgen.h>
 
 #include "define.h"
 #include "pse.h"
 #include "error.h"
 #include "util.h"
+#include "csv.h"
 
 void usage(const char* cmd) {
   fprintf(stderr, "usage: %s psefile\n", cmd);
 }
 
-void csv_output(pse_record pr, pse_frame pf) {
+void csv_output(const char* filename, pse_record pr, pse_frame pf) {
   int i;
-  uint32_t doy, hh, mm, ss, ms;
   uint64_t msec_of_year;
   double dmsec = 64 * 10 / 1060.0 * 1000;
 
   if (pr.format == FORMAT_OLD) {
     for(i=0; i<32; ++i) {
       msec_of_year = pf.msec_of_year + dmsec * i / 32;
-      msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("%d", pr.apollo_station);
-      printf(",spz");
-      printf(",%d", pf.frame_count);
-      printf(",%d", pr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",pf.spz[i]);
-      putchar('\n');
+      print_format(filename, pr.year, msec_of_year, pr.apollo_station, "spz",
+        pf.frame_count, pf.spz[i]);
     }
   }
 
   for(i=0; i<4; ++i) {
     msec_of_year = pf.msec_of_year + dmsec * i / 4;
-    msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("%d", pr.apollo_station);
-    printf(",lpx");
-    printf(",%d", pf.frame_count);
-    printf(",%d", pr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",pf.lpx[i]);
-    putchar('\n');
+    print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpx",
+      pf.frame_count, pf.lpx[i]);
+    print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpy",
+      pf.frame_count, pf.lpy[i]);
+    print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpz",
+      pf.frame_count, pf.lpz[i]);
   }
 
-  for(i=0; i<4; ++i) {
-    msec_of_year = pf.msec_of_year + dmsec * i / 4;
-    msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("%d", pr.apollo_station);
-    printf(",lpy");
-    printf(",%d", pf.frame_count);
-    printf(",%d", pr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",pf.lpy[i]);
-    putchar('\n');
-  }
-
-  for(i=0; i<4; ++i) {
-    msec_of_year = pf.msec_of_year + dmsec * i / 4;
-    msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("%d", pr.apollo_station);
-    printf(",lpz");
-    printf(",%d", pf.frame_count);    
-    printf(",%d", pr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",pf.lpz[i]);
-    putchar('\n');
-  }
-
-  msec_of_year_to_date(pf.msec_of_year, &doy, &hh, &mm, &ss, &ms);
   if (pf.frame_count%2 == 0) {
-    printf("%d", pr.apollo_station);
-    printf(",tdx");
-    printf(",%d", pf.frame_count);
-    printf(",%d", pr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",pf.TidX);
-    putchar('\n');
+    print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdx",
+      pf.frame_count, pf.TidX);
 
-    printf("%d", pr.apollo_station);
-    printf(",tdy");
-    printf(",%d", pf.frame_count);
-    printf(",%d", pr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",pf.TidY);
-    putchar('\n');
+    print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdy",
+      pf.frame_count, pf.TidY);
   } else {
-    printf("%d", pr.apollo_station);
-    printf(",tdz");
-    printf(",%d", pf.frame_count);
-    printf(",%d", pr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",pf.TidZ);
-    putchar('\n');
+    print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdz",
+      pf.frame_count, pf.TidZ);
 
-    printf("%d", pr.apollo_station);
-    printf(",ist");
-    printf(",%d", pf.frame_count);
-    printf(",%d", pr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",pf.InstT);
-    putchar('\n');
+    print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "ist",
+      pf.frame_count, pf.InstT);
   }
 }
 
@@ -125,11 +73,10 @@ int main(int argc, char** argv) {
   int i;
   long frame_offset;
   uint32_t doy, hh, mm, ss, ms;
+  char *basec, *bname;
 
   //initial value of Frame time error at last frame in one record
   uint64_t msec_of_year_fmax = 0;
-
-
 
   // ----------------------------------------
   // Apollo related variables
@@ -156,6 +103,9 @@ int main(int argc, char** argv) {
                "no such file: %s", filename);
     return -1;
   }
+
+  basec = strdup(filename);
+  bname = basename(basec);
 
   // ----------------------------------------
   // Frame
@@ -190,7 +140,7 @@ int main(int argc, char** argv) {
     pf[0].process_flag = process_flag | FLAG_TOP_OF_RECORD | FLAG_FIRST_DATA_COPIED;
     pf[0].error_flag = check_pse_frame(pf[0], pr.apollo_station, pr.year);
 
-    csv_output(pr, pf[0]);
+    csv_output(bname, pr, pf[0]);
 
     // register remnant frames into database
     for(i = 1; i < (SIZE_LOGICAL_RECORD * pr.phys_records); i++) {
@@ -210,11 +160,12 @@ int main(int argc, char** argv) {
         pf[i  ].spz[ 1],
         pf[i  ].spz[ 2]);
 
-      csv_output(pr, pf[i]);
+      csv_output(bname, pr, pf[i]);
     }
     msec_of_year_fmax = pf[i-1].msec_of_year;
     process_flag = 0;
   }
   fclose(f);
+  free(bname);
   return EXIT_SUCCESS;
 }

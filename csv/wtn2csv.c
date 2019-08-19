@@ -11,17 +11,19 @@
 #include <string.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <libgen.h>
 
 #include "define.h"
 #include "wtn.h"
 #include "error.h"
 #include "util.h"
+#include "csv.h"
 
 void usage(const char* cmd) {
   fprintf(stderr, "usage: %s wtnfile\n", cmd);
 }
 
-void csv_output(wtn_record wnr, wtn_frame wnf) {
+void csv_output(const char *filename, wtn_record wnr, wtn_frame wnf) {
   int i;
   uint32_t doy, hh, mm, ss, ms;
   uint64_t msec_of_year;
@@ -31,122 +33,56 @@ void csv_output(wtn_record wnr, wtn_frame wnf) {
   if (wnf.alsep_package_id != ALSEP_PACKAGE_ID_APOLLO_17) {
     for(i=0; i<32; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 32;
-      msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",spz");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.spz[i]);
-      putchar('\n');
+      print_format(filename, wnr.year, msec_of_year, 
+        apollo_station[wnf.alsep_package_id], "spz",
+        wnf.frame_count, wnf.spz[i]);
     }
 
     for(i=0; i<4; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 4;
-      msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",lpx");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.lpx[i]);
-      putchar('\n');
+      print_format(filename, wnr.year, msec_of_year,
+        apollo_station[wnf.alsep_package_id], "lpx",
+        wnf.frame_count, wnf.lpx[i]);
+      print_format(filename, wnr.year, msec_of_year,
+        apollo_station[wnf.alsep_package_id], "lpy",
+        wnf.frame_count, wnf.lpy[i]);
+      print_format(filename, wnr.year, msec_of_year,
+        apollo_station[wnf.alsep_package_id], "lpz",
+        wnf.frame_count, wnf.lpz[i]);
     }
 
-    for(i=0; i<4; ++i) {
-      msec_of_year = wnf.msec_of_year + dmsec * i / 4;
-      msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",lpy");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.lpy[i]);
-      putchar('\n');
-    }
-
-    for(i=0; i<4; ++i) {
-      msec_of_year = wnf.msec_of_year + dmsec * i / 4;
-      msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",lpz");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.lpz[i]);
-      putchar('\n');
-    }
-
-    msec_of_year_to_date(wnf.msec_of_year, &doy, &hh, &mm, &ss, &ms);
     if (wnf.frame_count%2 == 0) {
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",tdx");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.TidX);
-      putchar('\n');
-
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",tdy");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.TidY);
-      putchar('\n');
+      print_format(filename, wnr.year, wnf.msec_of_year,
+        apollo_station[wnf.alsep_package_id], "tdx",
+        wnf.frame_count, wnf.TidX);
+      print_format(filename, wnr.year, wnf.msec_of_year,
+        apollo_station[wnf.alsep_package_id], "tdy",
+        wnf.frame_count, wnf.TidY);
     } else {
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",tdz");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.TidZ);
-      putchar('\n');
-
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",ist");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.InstT);
-      putchar('\n');
+      print_format(filename, wnr.year, wnf.msec_of_year,
+        apollo_station[wnf.alsep_package_id], "tdz",
+        wnf.frame_count, wnf.TidZ);
+      print_format(filename, wnr.year, wnf.msec_of_year,
+        apollo_station[wnf.alsep_package_id], "ist",
+        wnf.frame_count, wnf.InstT);
     }
   } else {
     for(i=0; i<32; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 32;
-      msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("%d", apollo_station[wnf.alsep_package_id]);
-      printf(",lsg");
-      printf(",%d", wnf.frame_count);
-      printf(",%d", wnr.year);
-      printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-      printf(",%d",wnf.lsg[i]);
-      putchar('\n');
+      print_format(filename, wnr.year, msec_of_year,
+        apollo_station[wnf.alsep_package_id], "lsg",
+        wnf.frame_count, wnf.lsg[i]);
     }
 
-    printf("%d", apollo_station[wnf.alsep_package_id]);
-    printf(",lsg_tide");
-    printf(",%d", wnf.frame_count);
-    printf(",%d", wnr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",wnf.lsg_tide);
-    putchar('\n');
-
-    printf("%d", apollo_station[wnf.alsep_package_id]);
-    printf(",lsg_free");
-    printf(",%d", wnf.frame_count);
-    printf(",%d", wnr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",wnf.lsg_free);
-    putchar('\n');
-
-    printf("%d", apollo_station[wnf.alsep_package_id]);
-    printf(",lsg_temp");
-    printf(",%d", wnf.frame_count);
-    printf(",%d", wnr.year);
-    printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
-    printf(",%d",wnf.lsg_temp);
-    putchar('\n');
+    print_format(filename, wnr.year, wnf.msec_of_year,
+      apollo_station[wnf.alsep_package_id], "lsg_tide",
+      wnf.frame_count, wnf.lsg_tide);
+    print_format(filename, wnr.year, wnf.msec_of_year,
+      apollo_station[wnf.alsep_package_id], "lsg_free",
+      wnf.frame_count, wnf.lsg_free);
+    print_format(filename, wnr.year, wnf.msec_of_year,
+      apollo_station[wnf.alsep_package_id], "lsg_temp",
+      wnf.frame_count, wnf.lsg_temp);
   }
 }
 
@@ -159,6 +95,7 @@ int main(int argc, char** argv) {
   uint32_t process_flag;
   uint32_t error_flag;
   int i;
+  char *basec, *bname;
 
   // ----------------------------------------
   // Apollo related variables
@@ -198,6 +135,9 @@ int main(int argc, char** argv) {
                "invalid filesize: %s", filename);
     goto main_finish;
   }
+
+  basec = strdup(filename);
+  bname = basename(basec);
 
   // ----------------------------------------
   // Frame registration
@@ -278,7 +218,7 @@ int main(int argc, char** argv) {
                    wnf[i].msec_of_year);
       }
 
-      csv_output(wnr, wnf[i]);
+      csv_output(bname, wnr, wnf[i]);
     }
 
     for(i = wnr.num_asta; i<fmax; i++) {
@@ -312,7 +252,7 @@ int main(int argc, char** argv) {
                                   wnf[i].spz[2]);
         }
       }
-      csv_output(wnr, wnf[i]);
+      csv_output(bname, wnr, wnf[i]);
     }
   }
 
@@ -324,6 +264,11 @@ main_finish:
   if (wnf) {
     free(wnf);
     wnf = NULL;
+  }
+
+  if (bname) {
+    free(bname);
+    bname = NULL;
   }
   return 0;
 }
