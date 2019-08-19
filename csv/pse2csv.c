@@ -31,8 +31,9 @@ void csv_output(pse_record pr, pse_frame pf) {
     for(i=0; i<32; ++i) {
       msec_of_year = pf.msec_of_year + dmsec * i / 32;
       msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("%d", pf.frame_count);
+      printf("%d", pr.apollo_station);
       printf(",spz");
+      printf(",%d", pf.frame_count);
       printf(",%d", pr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",pf.spz[i]);
@@ -43,8 +44,9 @@ void csv_output(pse_record pr, pse_frame pf) {
   for(i=0; i<4; ++i) {
     msec_of_year = pf.msec_of_year + dmsec * i / 4;
     msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("%d", pf.frame_count);
+    printf("%d", pr.apollo_station);
     printf(",lpx");
+    printf(",%d", pf.frame_count);
     printf(",%d", pr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",pf.lpx[i]);
@@ -54,8 +56,9 @@ void csv_output(pse_record pr, pse_frame pf) {
   for(i=0; i<4; ++i) {
     msec_of_year = pf.msec_of_year + dmsec * i / 4;
     msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("%d", pf.frame_count);
+    printf("%d", pr.apollo_station);
     printf(",lpy");
+    printf(",%d", pf.frame_count);
     printf(",%d", pr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",pf.lpy[i]);
@@ -65,8 +68,9 @@ void csv_output(pse_record pr, pse_frame pf) {
   for(i=0; i<4; ++i) {
     msec_of_year = pf.msec_of_year + dmsec * i / 4;
     msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("%d", pf.frame_count);
+    printf("%d", pr.apollo_station);
     printf(",lpz");
+    printf(",%d", pf.frame_count);    
     printf(",%d", pr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",pf.lpz[i]);
@@ -75,29 +79,33 @@ void csv_output(pse_record pr, pse_frame pf) {
 
   msec_of_year_to_date(pf.msec_of_year, &doy, &hh, &mm, &ss, &ms);
   if (pf.frame_count%2 == 0) {
-    printf("%d", pf.frame_count);
+    printf("%d", pr.apollo_station);
     printf(",tdx");
+    printf(",%d", pf.frame_count);
     printf(",%d", pr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",pf.TidX);
     putchar('\n');
 
-    printf("%d", pf.frame_count);
+    printf("%d", pr.apollo_station);
     printf(",tdy");
+    printf(",%d", pf.frame_count);
     printf(",%d", pr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",pf.TidY);
     putchar('\n');
   } else {
-    printf("%d", pf.frame_count);
+    printf("%d", pr.apollo_station);
     printf(",tdz");
+    printf(",%d", pf.frame_count);
     printf(",%d", pr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",pf.TidZ);
     putchar('\n');
 
-    printf("%d", pf.frame_count);
+    printf("%d", pr.apollo_station);
     printf(",ist");
+    printf(",%d", pf.frame_count);
     printf(",%d", pr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",pf.InstT);
