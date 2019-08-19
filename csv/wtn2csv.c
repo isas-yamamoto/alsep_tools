@@ -31,7 +31,8 @@ void csv_output(wtn_record wnr, wtn_frame wnf) {
     for(i=0; i<32; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 32;
       msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("spz");
+      printf("%d", wnf.frame_count);
+      printf(",spz");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.spz[i]);
@@ -41,7 +42,8 @@ void csv_output(wtn_record wnr, wtn_frame wnf) {
     for(i=0; i<4; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 4;
       msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("lpx");
+      printf("%d", wnf.frame_count);
+      printf(",lpx");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.lpx[i]);
@@ -51,7 +53,8 @@ void csv_output(wtn_record wnr, wtn_frame wnf) {
     for(i=0; i<4; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 4;
       msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("lpy");
+      printf("%d", wnf.frame_count);
+      printf(",lpy");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.lpy[i]);
@@ -61,7 +64,8 @@ void csv_output(wtn_record wnr, wtn_frame wnf) {
     for(i=0; i<4; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 4;
       msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("lpz");
+      printf("%d", wnf.frame_count);
+      printf(",lpz");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.lpz[i]);
@@ -70,25 +74,29 @@ void csv_output(wtn_record wnr, wtn_frame wnf) {
 
     msec_of_year_to_date(wnf.msec_of_year, &doy, &hh, &mm, &ss, &ms);
     if (wnf.frame_count%2 == 0) {
-      printf("tdx");
+      printf("%d", wnf.frame_count);
+      printf(",tdx");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.TidX);
       putchar('\n');
 
-      printf("tdy");
+      printf("%d", wnf.frame_count);
+      printf(",tdy");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.TidY);
       putchar('\n');
     } else {
-      printf("tdz");
+      printf("%d", wnf.frame_count);
+      printf(",tdz");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.TidZ);
       putchar('\n');
 
-      printf("ist");
+      printf("%d", wnf.frame_count);
+      printf(",ist");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.InstT);
@@ -98,26 +106,30 @@ void csv_output(wtn_record wnr, wtn_frame wnf) {
     for(i=0; i<32; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 32;
       msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-      printf("lsg");
+      printf("%d", wnf.frame_count);
+      printf(",lsg");
       printf(",%d", wnr.year);
       printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
       printf(",%d",wnf.lsg[i]);
       putchar('\n');
     }
 
-    printf("lsg_tide");
+    printf("%d", wnf.frame_count);
+    printf(",lsg_tide");
     printf(",%d", wnr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",wnf.lsg_tide);
     putchar('\n');
 
-    printf("lsg_free");
+    printf("%d", wnf.frame_count);
+    printf(",lsg_free");
     printf(",%d", wnr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",wnf.lsg_free);
     putchar('\n');
 
-    printf("lsg_temp");
+    printf("%d", wnf.frame_count);
+    printf(",lsg_temp");
     printf(",%d", wnr.year);
     printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
     printf(",%d",wnf.lsg_temp);
