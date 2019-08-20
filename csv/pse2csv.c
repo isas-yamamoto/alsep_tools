@@ -32,32 +32,32 @@ void csv_output(const char* filename, pse_record pr, pse_frame pf) {
     for(i=0; i<32; ++i) {
       msec_of_year = pf.msec_of_year + dmsec * i / 32;
       print_format(filename, pr.year, msec_of_year, pr.apollo_station, "spz",
-        pf.frame_count, pf.spz[i]);
+        pf.frame_count, pf.spz[i], pr.error_flag, pf.error_flag);
     }
   }
 
   for(i=0; i<4; ++i) {
     msec_of_year = pf.msec_of_year + dmsec * i / 4;
     print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpx",
-      pf.frame_count, pf.lpx[i]);
+      pf.frame_count, pf.lpx[i], pr.error_flag, pf.error_flag);
     print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpy",
-      pf.frame_count, pf.lpy[i]);
+      pf.frame_count, pf.lpy[i], pr.error_flag, pf.error_flag);
     print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpz",
-      pf.frame_count, pf.lpz[i]);
+      pf.frame_count, pf.lpz[i], pr.error_flag, pf.error_flag);
   }
 
   if (pf.frame_count%2 == 0) {
     print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdx",
-      pf.frame_count, pf.TidX);
+      pf.frame_count, pf.TidX, pr.error_flag, pf.error_flag);
 
     print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdy",
-      pf.frame_count, pf.TidY);
+      pf.frame_count, pf.TidY, pr.error_flag, pf.error_flag);
   } else {
     print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdz",
-      pf.frame_count, pf.TidZ);
+      pf.frame_count, pf.TidZ, pr.error_flag, pf.error_flag);
 
     print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "ist",
-      pf.frame_count, pf.InstT);
+      pf.frame_count, pf.InstT, pr.error_flag, pf.error_flag);
   }
 }
 
@@ -68,7 +68,6 @@ int main(int argc, char** argv) {
   size_t r;
   char filename[PATH_MAX+1];
   uint32_t process_flag;
-  uint32_t error_flag;
   int size_part;
   int i;
   long frame_offset;
@@ -118,9 +117,9 @@ int main(int argc, char** argv) {
     }
 
     pr = binary2pse_record(record);
-    error_flag = check_pse_record(pr);
+    pr.error_flag = check_pse_record(pr);
 
-    if (ERROR_INVALID_FORMAT && error_flag) {
+    if (ERROR_INVALID_FORMAT && pr.error_flag) {
       log_printf(LOG_ERROR, __FILE__, __LINE__, "invalid format");
       break;
     }
