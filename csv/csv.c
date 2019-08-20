@@ -22,7 +22,8 @@ void print_format(
   printf(",%s", data_type);
   printf(",%d", frame_count);
   printf(",%d", year);
-  printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
+  printf(",%d", doy);
+  printf("%02d:%02d:%02d.%03d", hh, mm, ss, ms);
   printf(",%d", value);
   printf(",%d", process_flag);
   printf(",%d", record_error);
