@@ -11,6 +11,7 @@ void print_format(
     const char *data_type,
     int frame_count,
     int value,
+    uint32_t process_flag,
     uint32_t record_error,
     uint32_t frame_error)
 {
@@ -23,6 +24,7 @@ void print_format(
   printf(",%d", year);
   printf(",%d,%02d:%02d:%02d.%03d", doy, hh, mm, ss, ms);
   printf(",%d", value);
+  printf(",%d", process_flag);
   printf(",%d", record_error);
   printf(",%d", frame_error);
   putchar('\n');

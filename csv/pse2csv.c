@@ -32,32 +32,32 @@ void csv_output(const char* filename, pse_record pr, pse_frame pf) {
     for(i=0; i<32; ++i) {
       msec_of_year = pf.msec_of_year + dmsec * i / 32;
       print_format(filename, pr.year, msec_of_year, pr.apollo_station, "spz",
-        pf.frame_count, pf.spz[i], pr.error_flag, pf.error_flag);
+        pf.frame_count, pf.spz[i], pf.process_flag, pr.error_flag, pf.error_flag);
     }
   }
 
   for(i=0; i<4; ++i) {
     msec_of_year = pf.msec_of_year + dmsec * i / 4;
     print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpx",
-      pf.frame_count, pf.lpx[i], pr.error_flag, pf.error_flag);
+      pf.frame_count, pf.lpx[i], pf.process_flag, pr.error_flag, pf.error_flag);
     print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpy",
-      pf.frame_count, pf.lpy[i], pr.error_flag, pf.error_flag);
+      pf.frame_count, pf.lpy[i], pf.process_flag, pr.error_flag, pf.error_flag);
     print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpz",
-      pf.frame_count, pf.lpz[i], pr.error_flag, pf.error_flag);
+      pf.frame_count, pf.lpz[i], pf.process_flag, pr.error_flag, pf.error_flag);
   }
 
   if (pf.frame_count%2 == 0) {
     print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdx",
-      pf.frame_count, pf.TidX, pr.error_flag, pf.error_flag);
+      pf.frame_count, pf.TidX, pf.process_flag, pr.error_flag, pf.error_flag);
 
     print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdy",
-      pf.frame_count, pf.TidY, pr.error_flag, pf.error_flag);
+      pf.frame_count, pf.TidY, pf.process_flag, pr.error_flag, pf.error_flag);
   } else {
     print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "tdz",
-      pf.frame_count, pf.TidZ, pr.error_flag, pf.error_flag);
+      pf.frame_count, pf.TidZ, pf.process_flag, pr.error_flag, pf.error_flag);
 
     print_format(filename, pr.year, pf.msec_of_year, pr.apollo_station, "ist",
-      pf.frame_count, pf.InstT, pr.error_flag, pf.error_flag);
+      pf.frame_count, pf.InstT, pf.process_flag, pr.error_flag, pf.error_flag);
   }
 }
 

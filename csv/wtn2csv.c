@@ -35,54 +35,54 @@ void csv_output(const char *filename, wtn_record wnr, wtn_frame wnf) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 32;
       print_format(filename, wnr.year, msec_of_year, 
         apollo_station[wnf.alsep_package_id], "spz",
-        wnf.frame_count, wnf.spz[i], wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.spz[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
     }
 
     for(i=0; i<4; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 4;
       print_format(filename, wnr.year, msec_of_year,
         apollo_station[wnf.alsep_package_id], "lpx",
-        wnf.frame_count, wnf.lpx[i], wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.lpx[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
       print_format(filename, wnr.year, msec_of_year,
         apollo_station[wnf.alsep_package_id], "lpy",
-        wnf.frame_count, wnf.lpy[i], wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.lpy[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
       print_format(filename, wnr.year, msec_of_year,
         apollo_station[wnf.alsep_package_id], "lpz",
-        wnf.frame_count, wnf.lpz[i], wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.lpz[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
     }
 
     if (wnf.frame_count%2 == 0) {
       print_format(filename, wnr.year, wnf.msec_of_year,
         apollo_station[wnf.alsep_package_id], "tdx",
-        wnf.frame_count, wnf.TidX, wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.TidX, wnf.process_flag, wnr.error_flag, wnf.error_flag);
       print_format(filename, wnr.year, wnf.msec_of_year,
         apollo_station[wnf.alsep_package_id], "tdy",
-        wnf.frame_count, wnf.TidY, wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.TidY, wnf.process_flag, wnr.error_flag, wnf.error_flag);
     } else {
       print_format(filename, wnr.year, wnf.msec_of_year,
         apollo_station[wnf.alsep_package_id], "tdz",
-        wnf.frame_count, wnf.TidZ, wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.TidZ, wnf.process_flag, wnr.error_flag, wnf.error_flag);
       print_format(filename, wnr.year, wnf.msec_of_year,
         apollo_station[wnf.alsep_package_id], "ist",
-        wnf.frame_count, wnf.InstT, wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.InstT, wnf.process_flag, wnr.error_flag, wnf.error_flag);
     }
   } else {
     for(i=0; i<32; ++i) {
       msec_of_year = wnf.msec_of_year + dmsec * i / 32;
       print_format(filename, wnr.year, msec_of_year,
         apollo_station[wnf.alsep_package_id], "lsg",
-        wnf.frame_count, wnf.lsg[i], wnr.error_flag, wnf.error_flag);
+        wnf.frame_count, wnf.lsg[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
     }
 
     print_format(filename, wnr.year, wnf.msec_of_year,
       apollo_station[wnf.alsep_package_id], "lsg_tide",
-      wnf.frame_count, wnf.lsg_tide, wnr.error_flag, wnf.error_flag);
+      wnf.frame_count, wnf.lsg_tide, wnf.process_flag, wnr.error_flag, wnf.error_flag);
     print_format(filename, wnr.year, wnf.msec_of_year,
       apollo_station[wnf.alsep_package_id], "lsg_free",
-      wnf.frame_count, wnf.lsg_free, wnr.error_flag, wnf.error_flag);
+      wnf.frame_count, wnf.lsg_free, wnf.process_flag, wnr.error_flag, wnf.error_flag);
     print_format(filename, wnr.year, wnf.msec_of_year,
       apollo_station[wnf.alsep_package_id], "lsg_temp",
-      wnf.frame_count, wnf.lsg_temp, wnr.error_flag, wnf.error_flag);
+      wnf.frame_count, wnf.lsg_temp, wnf.process_flag, wnr.error_flag, wnf.error_flag);
   }
 }
 
