@@ -12,6 +12,5 @@ void print_format(
     int value,
     uint32_t process_flag,
     uint32_t record_error,
-    uint32_t frame_error
-    );
+    uint32_t frame_error);
 #endif
