@@ -34,17 +34,17 @@ void wtn_csv_output(const char *filename, wtn_record wnr, wtn_frame wnf)
 
   if (wnf.alsep_package_id != ALSEP_PACKAGE_ID_APOLLO_17)
   {
-    for (i = 0; i < 32; ++i)
+    for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_SP; ++i)
     {
-      msec_of_year = wnf.msec_of_year + dmsec * i / 32;
+      msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_SP;
       print_format(filename, wnr.year, msec_of_year,
                    apollo_station[wnf.alsep_package_id], "spz",
                    wnf.frame_count, wnf.spz[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
     }
 
-    for (i = 0; i < 4; ++i)
+    for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_LP; ++i)
     {
-      msec_of_year = wnf.msec_of_year + dmsec * i / 4;
+      msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_LP;
       print_format(filename, wnr.year, msec_of_year,
                    apollo_station[wnf.alsep_package_id], "lpx",
                    wnf.frame_count, wnf.lpx[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
@@ -77,9 +77,9 @@ void wtn_csv_output(const char *filename, wtn_record wnr, wtn_frame wnf)
   }
   else
   {
-    for (i = 0; i < 32; ++i)
+    for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_LSG; ++i)
     {
-      msec_of_year = wnf.msec_of_year + dmsec * i / 32;
+      msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_LSG;
       print_format(filename, wnr.year, msec_of_year,
                    apollo_station[wnf.alsep_package_id], "lsg",
                    wnf.frame_count, wnf.lsg[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
@@ -305,10 +305,10 @@ main_finish:
     wnf = NULL;
   }
 
-  if (bname)
+  if (basec)
   {
-    free(bname);
-    bname = NULL;
+    free(basec);
+    basec = NULL;
   }
   return 0;
 }

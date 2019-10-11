@@ -10,6 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <libgen.h>
 
 #include "define.h"
 #include "wth.h"
@@ -21,65 +22,50 @@ void usage(const char *cmd)
   fprintf(stderr, "usage: %s wthfile\n", cmd);
 }
 
-void wth_csv_output(wth_record whr, wth_frame whf)
+void wth_csv_output(const char *filename, wth_record whr, wth_frame whf)
 {
   int i;
   uint32_t doy, hh, mm, ss, ms;
   uint64_t msec_of_year;
   double dmsec = 20 * 30 / 3533.0 * 1000;
 
-  for (i = 0; i < 20; ++i)
+  for (i = 0; i < COUNTS_PER_FRAME_FOR_WTH_GP; ++i)
   {
-    msec_of_year = whf.msec_of_year + dmsec * i / 20;
+    msec_of_year = whf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTH_GP;
     msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("dp1");
+    printf("%s", filename);
+    printf(",dp1");
     printf(",%d", whr.year);
     printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
     printf(",%d", whf.dp1[i]);
     putchar('\n');
-  }
 
-  for (i = 0; i < 20; ++i)
-  {
-    msec_of_year = whf.msec_of_year + dmsec * i / 20;
-    msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("dp6");
+    printf("%s", filename);
+    printf(",dp6");
     printf(",%d", whr.year);
     printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
     printf(",%d", whf.dp6[i]);
     putchar('\n');
-  }
 
-  for (i = 0; i < 20; ++i)
-  {
-    msec_of_year = whf.msec_of_year + dmsec * i / 20;
-    msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("dp6");
+    printf("%s", filename);
+    printf(",dp11");
     printf(",%d", whr.year);
     printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
     printf(",%d", whf.dp11[i]);
     putchar('\n');
-  }
 
-  for (i = 0; i < 20; ++i)
-  {
-    msec_of_year = whf.msec_of_year + dmsec * i / 20;
-    msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("dp6");
+    printf("%s", filename);
+    printf(",dp16");
     printf(",%d", whr.year);
     printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
     printf(",%d", whf.dp16[i]);
     putchar('\n');
-  }
 
-  for (i = 0; i < 20; ++i)
-  {
-    msec_of_year = whf.msec_of_year + dmsec * i / 20;
-    msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("dp_status");
+    printf("%s", filename);
+    printf(",dp_status");
     printf(",%d", whr.year);
     printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
-    printf(",%d", whf.dp16[i]);
+    printf(",%d", whf.status[i]);
     putchar('\n');
   }
 }
@@ -94,6 +80,7 @@ int main(int argc, char **argv)
   int error_flag;
   int i;
   uint32_t doy, hh, mm, ss, ms;
+  char *basec, *bname;
 
   // ----------------------------------------
   // Apollo related variables
@@ -136,6 +123,9 @@ int main(int argc, char **argv)
                "invalid filesize: %s", filename);
     goto main_finish;
   }
+
+  basec = strdup(filename);
+  bname = basename(basec);
 
   // ----------------------------------------
   // Frame registration
@@ -204,7 +194,7 @@ int main(int argc, char **argv)
       }
       whf[fmax] = binary2wth_frame(whr, frame);
       error_flag = check_wth_frame(whf[fmax], whr.year);
-      wth_csv_output(whr, whf[fmax]);
+      wth_csv_output(bname, whr, whf[fmax]);
     }
     fmax++;
   }
@@ -220,6 +210,12 @@ main_finish:
   {
     free(whf);
     whf = NULL;
+  }
+
+  if (basec)
+  {
+    free(basec);
+    basec = NULL;
   }
 
   return EXIT_SUCCESS;

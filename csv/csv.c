@@ -23,7 +23,7 @@ void print_format(
   printf(",%d", frame_count);
   printf(",%d", year);
   printf(",%d", doy);
-  printf("%02d:%02d:%02d.%03d", hh, mm, ss, ms);
+  printf(",%02d:%02d:%02d.%03d", hh, mm, ss, ms);
   printf(",%d", value);
   printf(",%d", process_flag);
   printf(",%d", record_error);

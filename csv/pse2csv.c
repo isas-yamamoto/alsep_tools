@@ -32,17 +32,17 @@ void pse_csv_output(const char *filename, pse_record pr, pse_frame pf)
 
   if (pr.format == FORMAT_OLD)
   {
-    for (i = 0; i < 32; ++i)
+    for (i = 0; i < COUNTS_PER_FRAME_FOR_PSE_SP; ++i)
     {
-      msec_of_year = pf.msec_of_year + dmsec * i / 32;
+      msec_of_year = pf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_PSE_SP;
       print_format(filename, pr.year, msec_of_year, pr.apollo_station, "spz",
                    pf.frame_count, pf.spz[i], pf.process_flag, pr.error_flag, pf.error_flag);
     }
   }
 
-  for (i = 0; i < 4; ++i)
+  for (i = 0; i < COUNTS_PER_FRAME_FOR_PSE_LP; ++i)
   {
-    msec_of_year = pf.msec_of_year + dmsec * i / 4;
+    msec_of_year = pf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_PSE_LP;
     print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpx",
                  pf.frame_count, pf.lpx[i], pf.process_flag, pr.error_flag, pf.error_flag);
     print_format(filename, pr.year, msec_of_year, pr.apollo_station, "lpy",
@@ -183,6 +183,6 @@ int main(int argc, char **argv)
     process_flag = 0;
   }
   fclose(f);
-  free(bname);
+  free(basec);
   return EXIT_SUCCESS;
 }
