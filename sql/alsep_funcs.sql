@@ -100,7 +100,7 @@ BEGIN
   ncarray := 32;
 
   -- frame time step in msec
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float / ncarray;
@@ -144,7 +144,7 @@ BEGIN
   ncarray := 32;
 
   -- frame time step in msec
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float / ncarray;
@@ -267,7 +267,7 @@ BEGIN
   ncarray := 4;
 
   -- frame time step in msec
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float / ncarray;
@@ -311,7 +311,7 @@ BEGIN
   ncarray := 4;
 
   -- frame time step in msec
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float / ncarray;
@@ -447,7 +447,7 @@ BEGIN
   nfstep := 2;
 
   -- frame time step in msec
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float * nfstep;
@@ -490,7 +490,7 @@ BEGIN
   nfstep := 2;
 
   -- frame time step in msec
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float * nfstep;
@@ -533,7 +533,7 @@ BEGIN
   nfstep := 2;
 
   -- frame time step in msec
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float * nfstep;
@@ -580,7 +580,7 @@ BEGIN
   nfstep := 2;
 
   -- frame time step in msec
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float * nfstep;
@@ -706,7 +706,7 @@ BEGIN
   ncarray := 31;
 
   -- data time step [msec]
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float / ncarray;
@@ -750,7 +750,7 @@ BEGIN
   ncarray := 31;
 
   -- data time step [msec]
-  dtframe := 604;
+  dtframe := 603.7736;
 
   -- data time step [msec]
   dtstep := dtframe::float / ncarray;
@@ -876,7 +876,7 @@ BEGIN
   ncarray := 20;
 
   -- data time step [msec]
-  dtframe := 170;
+  dtframe := 169.8129;
 
   -- data time step [msec]
   dtstep := dtframe::float / ncarray;
@@ -921,7 +921,7 @@ BEGIN
   ncarray := 20;
 
   -- data time step [msec]
-  dtframe := 170;
+  dtframe := 169.8129;
 
   -- data time step [msec]
   dtstep := dtframe::float / ncarray;
