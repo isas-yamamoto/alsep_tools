@@ -1,7 +1,8 @@
 /*! @file pse2pgcopy.c
- *  @brief PSEデータをRDBMSに格納するプログラム
+ *  @brief Register PSE raw data to RDBMS
  *  @author: Yukio Yamamoto, Ryuhei Yamada
  *  @date 2011/02/01
+ *  @update 2021/10/15
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,7 @@
 #include <time.h>
 #include <string.h>
 #include <inttypes.h>
+#include <getopt.h>
 
 #include "define.h"
 #include "pse.h"

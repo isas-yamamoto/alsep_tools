@@ -126,5 +126,6 @@ int check_wth_record(wth_record whr);
 int check_wth_frame(wth_frame whf, int year);
 wth_record binary2wth_record(const unsigned char *header);
 wth_frame binary2wth_frame(wth_record whr, const unsigned char *frame);
+int package_id2station_id(uint32_t package_id);
 
 #endif
