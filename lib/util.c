@@ -41,6 +41,53 @@ void msec_of_year_to_date(int64_t msec_of_year,
 }
 
 /*!
+ * @brief convert DOY to date
+ *
+ * @param[in] year year
+ * @param[in] doy day of year
+ * @param[out] date_string date_string
+ */
+void doy_to_date_string(uint32_t year, uint32_t doy, char date_string[11]) {
+  uint32_t days_in_month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  uint32_t month, day;
+  size_t i;
+  if (year == 1972 || year == 1976) {
+    days_in_month[1] = 29; // add leap day
+  }
+
+  month = 1;
+  for (i = 0; i < 12; ++i) {
+    if (doy < days_in_month[i]) {
+      break;
+    }
+    month += 1;
+    doy -= days_in_month[i];
+  }
+  day = doy;
+
+  sprintf(date_string, "%04d-%02d-%02d", year, month, day);
+}
+
+/*!
+ * @brief 年単位の通算ミリ秒を年単位の通算日(DOY)と時刻に変換する
+ *
+ * @param[in] year year
+ * @param[in] msec_of_year milliseconds of year
+ * @param[in] us_offset microseconds offset
+ * @param[out] date_string date_string
+ */
+void msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, uint32_t us_offset, char date_string[24] ) {
+  uint32_t doy, hh, mm, ss, ms, us;
+  char date[11]; /* YYYY-mm-dd */
+  msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
+  doy_to_date_string(year, doy, date);
+  us = ms + 1000;
+  us += us_offset;
+
+  sprintf(date_string, "%s %02d:%02d:%02d.%06d", date, hh, mm, ss, us);
+}
+
+/*!
  * @brief 文字列が数値かどうか確認する。
  *
  * @param[in] s 確認対象の文字列

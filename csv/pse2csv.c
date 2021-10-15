@@ -1,7 +1,7 @@
 /*! @file pse2csv.c
  *  @brief Convert from PSE original binary to CSV
  *  @author: Yukio Yamamoto, Ryuhei Yamada
- *  @date 2019/07/17
+ *  @date 2021/10/15
  */
 #include <stdio.h>
 #include <stdlib.h>
