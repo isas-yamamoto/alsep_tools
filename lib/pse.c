@@ -3,6 +3,7 @@
 #include "error.h"
 #include "define.h"
 #include "pse.h"
+#include "util.h"
 
 /*!
  * @brief PSEレコードをチェックしエラーを返す。

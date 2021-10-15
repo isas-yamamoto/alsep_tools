@@ -3,6 +3,7 @@
 #include "error.h"
 #include "define.h"
 #include "wtn.h"
+#include "util.h"
 
 /*!
  * @brief WTNレコードをチェックしエラーを返す。
