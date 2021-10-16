@@ -47,7 +47,7 @@ void msec_of_year_to_date(int64_t msec_of_year,
  * @param[in] doy day of year
  * @param[out] date_string date_string
  */
-void doy_to_date_string(uint32_t year, uint32_t doy, char date_string[11]) {
+int doy_to_date_string(uint32_t year, uint32_t doy, char date_string[11]) {
   uint32_t days_in_month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   uint32_t month, day;
   size_t i;
@@ -57,15 +57,19 @@ void doy_to_date_string(uint32_t year, uint32_t doy, char date_string[11]) {
 
   month = 1;
   for (i = 0; i < 12; ++i) {
-    if (doy < days_in_month[i]) {
+    if (doy <= days_in_month[i]) {
       break;
     }
     month += 1;
     doy -= days_in_month[i];
   }
-  day = doy;
+  if (month > 12) {
+    return FALSE;
+  }
 
+  day = doy;
   sprintf(date_string, "%04d-%02d-%02d", year, month, day);
+  return TRUE;
 }
 
 /*!
