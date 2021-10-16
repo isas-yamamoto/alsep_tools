@@ -1,1 +1,1 @@
-SUBDIRS=lib info pgcopy script sql csv
+SUBDIRS=lib info pgcopy script sql csv tests
