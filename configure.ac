@@ -37,6 +37,6 @@ AC_CONFIG_FILES([Makefile
                  script/Makefile
                  csv/Makefile
                  sql/Makefile
-                 tests/Makefile])
+                 csv_for_d5a/Makefile])
 AC_PROG_RANLIB
 AC_OUTPUT

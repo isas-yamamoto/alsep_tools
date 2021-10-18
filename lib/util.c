@@ -85,7 +85,7 @@ void msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, uint32_t u
   char date[11]; /* YYYY-mm-dd */
   msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
   doy_to_date_string(year, doy, date);
-  us = ms + 1000;
+  us = ms * 1000;
   us += us_offset;
 
   sprintf(date_string, "%s %02d:%02d:%02d.%06d", date, hh, mm, ss, us);
