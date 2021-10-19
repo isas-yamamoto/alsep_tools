@@ -41,7 +41,6 @@ void print_spz(
     uint32_t us_offset,
     int value)
 {
-  uint32_t doy, hh, mm, ss, ms;
   char date_string[SIZE_DATE_STRING];
   msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
   fprintf(f, "%s", filename);
@@ -114,7 +113,6 @@ void print_lsg(
     uint32_t us_offset,
     int value)
 {
-  uint32_t doy, hh, mm, ss, ms;
   char date_string[SIZE_DATE_STRING];
   msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
   fprintf(f, "%s", filename);

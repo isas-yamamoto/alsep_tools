@@ -109,7 +109,6 @@ int main(int argc, char **argv)
   int size_part;
   int i;
   long frame_offset;
-  uint32_t doy, hh, mm, ss, ms;
   char *basec, *bname;
   long file_offset;
   int record_no;

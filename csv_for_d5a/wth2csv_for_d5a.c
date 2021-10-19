@@ -59,7 +59,8 @@ int main(int argc, char **argv)
   char pathname[PATH_MAX + 1];
   int error_flag;
   int i;
-  char *basec, *bname;
+  char *basec = NULL;
+  char *bname = NULL;
   long file_offset;
 
   // ----------------------------------------
