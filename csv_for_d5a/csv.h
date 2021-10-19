@@ -2,6 +2,14 @@
 #define __CSV_H__
 #include <stdint.h>
 
+#define FILEPOINTER_SPZ 0
+#define FILEPOINTER_LPXYZ 1
+#define FILEPOINTER_TDXY 2
+#define FILEPOINTER_TDZI 3
+#define FILEPOINTER_LSG 4
+#define FILEPOINTER_META 5
+#define SIZE_FILEPOINTERS 6
+
 void print_format(
     const char *filename,
     int year,
@@ -49,6 +57,15 @@ void print_tdzi(
     uint64_t msec_of_year,
     uint32_t us_offset,
     int tdz, int instT);
+
+void print_lsg(
+    FILE *f,
+    int apollo_station,
+    const char *filename,
+    int year,
+    uint64_t msec_of_year,
+    uint32_t us_offset,
+    int value);
 
 void print_meta(
     FILE *f,

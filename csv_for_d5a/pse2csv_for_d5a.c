@@ -1,7 +1,7 @@
-/*! @file pse2csv.c
+/*! @file pse2csv_for_d5a.c
  *  @brief Convert from PSE original binary to CSV
  *  @author: Yukio Yamamoto, Ryuhei Yamada
- *  @date 2021/10/15
+ *  @date 2021/10/19
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,13 +20,6 @@
 #include "error.h"
 #include "util.h"
 #include "csv.h"
-
-#define FILEPOINTER_SPZ 0
-#define FILEPOINTER_LPXYZ 1
-#define FILEPOINTER_TDXY 2
-#define FILEPOINTER_TDZI 3
-#define FILEPOINTER_META 4
-#define SIZE_FILEPOINTERS 5
 
 void usage(const char *cmd)
 {

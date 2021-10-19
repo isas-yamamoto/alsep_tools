@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <libgen.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 #include "define.h"
 #include "wtn.h"
@@ -21,10 +23,13 @@
 
 void usage(const char *cmd)
 {
-  fprintf(stderr, "usage: %s wtnfile\n", cmd);
+  fprintf(stderr, "usage: %s dirname wtnfile\n", cmd);
 }
 
-void wtn_csv_output(const char *filename, wtn_record wnr, wtn_frame wnf)
+void wtn_csv_output(FILE *fps_write[SIZE_FILEPOINTERS],
+                    const char *filename, long file_offset,
+                    int record_no, int frame_no,
+                    wtn_record wnr, wtn_frame wnf)
 {
   int i;
   uint32_t doy, hh, mm, ss, ms;
@@ -32,47 +37,63 @@ void wtn_csv_output(const char *filename, wtn_record wnr, wtn_frame wnf)
   double dmsec = 64 * 10 / 1060.0 * 1000;
   int apollo_station[] = {-1, 12, 15, 16, 14, 17};
 
+  print_meta(fps_write[FILEPOINTER_META],
+             filename,
+             file_offset,
+             record_no,
+             frame_no,
+             wnf.frame_count,
+             wnr.year,
+             wnf.msec_of_year,
+             0,
+             wnf.process_flag, wnr.error_flag, wnf.error_flag);
+
   if (wnf.alsep_package_id != ALSEP_PACKAGE_ID_APOLLO_17)
   {
     for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_SP; ++i)
     {
       msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_SP;
-      print_format(filename, wnr.year, msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "spz",
-                   wnf.frame_count, wnf.spz[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
+      print_spz(fps_write[FILEPOINTER_SPZ],
+                apollo_station[wnf.alsep_package_id],
+                filename,
+                wnr.year,
+                msec_of_year,
+                i * dmsec / 32,
+                wnf.spz[i]);
     }
 
     for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_LP; ++i)
     {
       msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_LP;
-      print_format(filename, wnr.year, msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "lpx",
-                   wnf.frame_count, wnf.lpx[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
-      print_format(filename, wnr.year, msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "lpy",
-                   wnf.frame_count, wnf.lpy[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
-      print_format(filename, wnr.year, msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "lpz",
-                   wnf.frame_count, wnf.lpz[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
+      print_lpxyz(fps_write[FILEPOINTER_LPXYZ],
+                apollo_station[wnf.alsep_package_id],
+                filename,
+                wnr.year,
+                msec_of_year,
+                i * dmsec / 4,
+                wnf.lpx[i], wnf.lpy[i], wnf.lpz[i]);
+
     }
 
     if (wnf.frame_count % 2 == 0)
     {
-      print_format(filename, wnr.year, wnf.msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "tdx",
-                   wnf.frame_count, wnf.TidX, wnf.process_flag, wnr.error_flag, wnf.error_flag);
-      print_format(filename, wnr.year, wnf.msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "tdy",
-                   wnf.frame_count, wnf.TidY, wnf.process_flag, wnr.error_flag, wnf.error_flag);
+      print_tdxy(fps_write[FILEPOINTER_TDXY],
+                apollo_station[wnf.alsep_package_id],
+                filename,
+                wnr.year,
+                msec_of_year,
+                0,
+                wnf.TidX, wnf.TidY);
     }
     else
     {
-      print_format(filename, wnr.year, wnf.msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "tdz",
-                   wnf.frame_count, wnf.TidZ, wnf.process_flag, wnr.error_flag, wnf.error_flag);
-      print_format(filename, wnr.year, wnf.msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "ist",
-                   wnf.frame_count, wnf.InstT, wnf.process_flag, wnr.error_flag, wnf.error_flag);
+      print_tdzi(fps_write[FILEPOINTER_TDZI],
+                apollo_station[wnf.alsep_package_id],
+                filename,
+                wnr.year,
+                msec_of_year,
+                0,
+                wnf.TidZ, wnf.InstT);
     }
   }
   else
@@ -80,20 +101,14 @@ void wtn_csv_output(const char *filename, wtn_record wnr, wtn_frame wnf)
     for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_LSG; ++i)
     {
       msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_LSG;
-      print_format(filename, wnr.year, msec_of_year,
-                   apollo_station[wnf.alsep_package_id], "lsg",
-                   wnf.frame_count, wnf.lsg[i], wnf.process_flag, wnr.error_flag, wnf.error_flag);
+      print_lsg(fps_write[FILEPOINTER_LSG],
+                apollo_station[wnf.alsep_package_id],
+                filename,
+                wnr.year,
+                msec_of_year,
+                i * dmsec / 32,
+                wnf.lsg[i]);
     }
-
-    print_format(filename, wnr.year, wnf.msec_of_year,
-                 apollo_station[wnf.alsep_package_id], "lsg_tide",
-                 wnf.frame_count, wnf.lsg_tide, wnf.process_flag, wnr.error_flag, wnf.error_flag);
-    print_format(filename, wnr.year, wnf.msec_of_year,
-                 apollo_station[wnf.alsep_package_id], "lsg_free",
-                 wnf.frame_count, wnf.lsg_free, wnf.process_flag, wnr.error_flag, wnf.error_flag);
-    print_format(filename, wnr.year, wnf.msec_of_year,
-                 apollo_station[wnf.alsep_package_id], "lsg_temp",
-                 wnf.frame_count, wnf.lsg_temp, wnf.process_flag, wnr.error_flag, wnf.error_flag);
   }
 }
 
@@ -101,13 +116,18 @@ int main(int argc, char **argv)
 {
 
   //Generic variables
-  FILE *f;
+  FILE *fp_read;
+  FILE *fps_write[SIZE_FILEPOINTERS];
   size_t r;
   char filename[PATH_MAX + 1];
+  char dirname[PATH_MAX + 1];
+  char pathname[PATH_MAX + 1];
   uint32_t process_flag;
   uint32_t error_flag;
   int i;
   char *basec, *bname;
+  long file_offset;
+  int frame_no;
 
   // ----------------------------------------
   // Apollo related variables
@@ -125,18 +145,19 @@ int main(int argc, char **argv)
   // ----------------------------------------
   // Command line option
   // ----------------------------------------
-  if (argc != 2)
+  if (argc != 3)
   {
     usage(argv[0]);
     return EXIT_FAILURE;
   }
-  SET_ARG(filename, 1, PATH_MAX);
+  SET_ARG(dirname, 1, PATH_MAX);
+  SET_ARG(filename, 2, PATH_MAX);
 
   // ----------------------------------------
   // PROGRAM MAIN
   // ----------------------------------------
-  f = fopen(filename, "rb");
-  if (f == NULL)
+  fp_read = fopen(filename, "rb");
+  if (fp_read == NULL)
   {
     log_printf(LOG_ERROR, __FILE__, __LINE__,
                "no such file: %s", filename);
@@ -154,10 +175,35 @@ int main(int argc, char **argv)
   basec = strdup(filename);
   bname = basename(basec);
 
+  mkdir(dirname, S_IRWXU);
+
+  // ----------------------------------------
+  // Prepare File Pointers
+  // ----------------------------------------
+  sprintf(pathname, "%s/%s_spz.csv", dirname, bname);
+  fps_write[FILEPOINTER_SPZ] = fopen(pathname, "w");
+
+  sprintf(pathname, "%s/%s_lp.csv", dirname, bname);
+  fps_write[FILEPOINTER_LPXYZ] = fopen(pathname, "w");
+
+  sprintf(pathname, "%s/%s_tdxy.csv", dirname, bname);
+  fps_write[FILEPOINTER_TDXY] = fopen(pathname, "w");
+
+  sprintf(pathname, "%s/%s_tdzi.csv", dirname, bname);
+  fps_write[FILEPOINTER_TDZI] = fopen(pathname, "w");
+
+  sprintf(pathname, "%s/%s_lsg.csv", dirname, bname);
+  fps_write[FILEPOINTER_LSG] = fopen(pathname, "w");
+
+  sprintf(pathname, "%s/%s_meta.csv", dirname, bname);
+  fps_write[FILEPOINTER_META] = fopen(pathname, "w");
+
+
   // ----------------------------------------
   // Frame registration
   // ----------------------------------------
-  while ((r = fread(record, sizeof(unsigned char), SIZE_HEADER, f)) > 0)
+  file_offset = ftell(fp_read);
+  while ((r = fread(record, sizeof(unsigned char), SIZE_HEADER, fp_read)) > 0)
   {
     if (r != SIZE_HEADER)
     {
@@ -176,7 +222,7 @@ int main(int argc, char **argv)
       goto main_finish;
     }
 
-    r = fread(header, sizeof(unsigned char), SIZE_HEADER, f);
+    r = fread(header, sizeof(unsigned char), SIZE_HEADER, fp_read);
     if (r != SIZE_HEADER)
     {
       log_printf(LOG_ERROR, __FILE__, __LINE__,
@@ -191,7 +237,7 @@ int main(int argc, char **argv)
       {
         log_printf(LOG_ERROR, __FILE__, __LINE__,
                    "header is not duplicated.");
-        fseek(f, -SIZE_HEADER, SEEK_CUR);
+        fseek(fp_read, -SIZE_HEADER, SEEK_CUR);
         num_header = 1;
         goto main_finish;
       }
@@ -213,7 +259,8 @@ int main(int argc, char **argv)
 
     // Read Frame
     fmax = 0;
-    while ((r = fread(frame, sizeof(unsigned char), SIZE_FRAME, f)) > 0)
+    frame_no = 0;
+    while ((r = fread(frame, sizeof(unsigned char), SIZE_FRAME, fp_read)) > 0)
     {
       if (fmax >= max_wtn_frame)
       {
@@ -246,7 +293,10 @@ int main(int argc, char **argv)
                    wnf[i].msec_of_year);
       }
 
-      wtn_csv_output(bname, wnr, wnf[i]);
+      wtn_csv_output(fps_write,
+                    bname, file_offset,
+                    frame_no, i,
+                    wnr, wnf[i]);
     }
 
     for (i = wnr.num_asta; i < fmax; i++)
@@ -289,14 +339,20 @@ int main(int argc, char **argv)
                                  wnf[i].spz[2]);
         }
       }
-      wtn_csv_output(bname, wnr, wnf[i]);
+      wtn_csv_output(fps_write,
+                    bname, file_offset,
+                    frame_no, i,
+                    wnr, wnf[i]);
+
     }
+    frame_no++;
+    file_offset = ftell(fp_read);
   }
 
 main_finish:
-  if (f)
+  if (fp_read)
   {
-    fclose(f);
+    fclose(fp_read);
   }
 
   if (wnf)

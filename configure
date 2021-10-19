@@ -6865,7 +6865,7 @@ then :
 fi
 
 
-ac_config_files="$ac_config_files Makefile info/Makefile lib/Makefile pgcopy/Makefile script/Makefile csv/Makefile sql/Makefile tests/Makefile"
+ac_config_files="$ac_config_files Makefile info/Makefile lib/Makefile pgcopy/Makefile script/Makefile csv/Makefile sql/Makefile csv_for_d5a/Makefile"
 
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -7706,7 +7706,7 @@ do
     "script/Makefile") CONFIG_FILES="$CONFIG_FILES script/Makefile" ;;
     "csv/Makefile") CONFIG_FILES="$CONFIG_FILES csv/Makefile" ;;
     "sql/Makefile") CONFIG_FILES="$CONFIG_FILES sql/Makefile" ;;
-    "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+    "csv_for_d5a/Makefile") CONFIG_FILES="$CONFIG_FILES csv_for_d5a/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
