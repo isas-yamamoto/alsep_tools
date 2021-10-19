@@ -42,7 +42,7 @@ void print_spz(
     int value)
 {
   uint32_t doy, hh, mm, ss, ms;
-  char date_string[24];
+  char date_string[SIZE_DATE_STRING];
   msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
   fprintf(f, "%s", filename);
   fprintf(f, ",%d", apollo_station);
@@ -60,8 +60,7 @@ void print_lpxyz(
     uint32_t us_offset,
     int lpx, int lpy, int lpz)
 {
-  uint32_t doy, hh, mm, ss, ms;
-  char date_string[24];
+  char date_string[SIZE_DATE_STRING];
   msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
   fprintf(f, "%s", filename);
   fprintf(f, ",%d", apollo_station);
@@ -79,8 +78,7 @@ void print_tdxy(
     uint32_t us_offset,
     int tdx, int tdy)
 {
-  uint32_t doy, hh, mm, ss, ms;
-  char date_string[24];
+  char date_string[SIZE_DATE_STRING];
   msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
   fprintf(f, "%s", filename);
   fprintf(f, ",%d", apollo_station);
@@ -98,7 +96,7 @@ void print_tdzi(
     uint32_t us_offset,
     int tdz, int instT)
 {
-  char date_string[24];
+  char date_string[SIZE_DATE_STRING];
   msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
   fprintf(f, "%s", filename);
   fprintf(f, ",%d", apollo_station);
@@ -117,7 +115,7 @@ void print_lsg(
     int value)
 {
   uint32_t doy, hh, mm, ss, ms;
-  char date_string[24];
+  char date_string[SIZE_DATE_STRING];
   msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
   fprintf(f, "%s", filename);
   fprintf(f, ",%d", apollo_station);
@@ -126,6 +124,25 @@ void print_lsg(
   fprintf(f, "\n");
 }
 
+void print_gp(
+    FILE *f,
+    int apollo_station,
+    const char *filename,
+    int year,
+    uint64_t msec_of_year,
+    uint32_t us_offset,
+    int dp1, int dp6, int dp11, int dp16,
+    int status)
+{
+  char date_string[SIZE_DATE_STRING];
+  msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
+  fprintf(f, "%s", filename);
+  fprintf(f, ",%d", apollo_station);
+  fprintf(f, ",%s", date_string);
+  fprintf(f, ",%d,%d,%d,%d", dp1, dp6, dp11, dp16);
+  fprintf(f, ",%d", status);
+  fprintf(f, "\n");
+}
 
 void print_meta(
     FILE *f,
@@ -141,7 +158,7 @@ void print_meta(
     uint32_t record_error,
     uint32_t frame_error)
 {
-  char date_string[24];
+  char date_string[SIZE_DATE_STRING];
   msec_of_year_to_date_string(year, msec_of_year, us_offset, date_string);
   fprintf(f, "%s", filename);
   fprintf(f, ",%s", date_string);

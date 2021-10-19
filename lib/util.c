@@ -80,7 +80,7 @@ int doy_to_date_string(uint32_t year, uint32_t doy, char date_string[11]) {
  * @param[in] us_offset microseconds offset
  * @param[out] date_string date_string
  */
-void msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, uint32_t us_offset, char date_string[24] ) {
+void msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, uint32_t us_offset, char date_string[SIZE_DATE_STRING] ) {
   uint32_t doy, hh, mm, ss, ms, us;
   char date[11]; /* YYYY-mm-dd */
   msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);

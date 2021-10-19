@@ -7,8 +7,9 @@
 #define FILEPOINTER_TDXY 2
 #define FILEPOINTER_TDZI 3
 #define FILEPOINTER_LSG 4
-#define FILEPOINTER_META 5
-#define SIZE_FILEPOINTERS 6
+#define FILEPOINTER_GP 5
+#define FILEPOINTER_META 6
+#define SIZE_FILEPOINTERS 7
 
 void print_format(
     const char *filename,
@@ -66,6 +67,16 @@ void print_lsg(
     uint64_t msec_of_year,
     uint32_t us_offset,
     int value);
+
+void print_gp(
+    FILE *f,
+    int apollo_station,
+    const char *filename,
+    int year,
+    uint64_t msec_of_year,
+    uint32_t us_offset,
+    int dp1, int dp6, int dp11, int dp16,
+    int status);
 
 void print_meta(
     FILE *f,

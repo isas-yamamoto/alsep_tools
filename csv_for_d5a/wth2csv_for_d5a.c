@@ -11,62 +11,39 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <libgen.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 #include "define.h"
 #include "wth.h"
 #include "error.h"
 #include "util.h"
+#include "csv.h"
 
 void usage(const char *cmd)
 {
-  fprintf(stderr, "usage: %s wthfile\n", cmd);
+  fprintf(stderr, "usage: %s dirname wthfile\n", cmd);
 }
 
-void wth_csv_output(const char *filename, wth_record whr, wth_frame whf)
+void wth_csv_output(FILE *fps_write[SIZE_FILEPOINTERS],
+                    const char *filename, long file_offset,
+                    int record_no, int frame_no,
+                    wth_record whr, wth_frame whf)
 {
   int i;
-  uint32_t doy, hh, mm, ss, ms;
   uint64_t msec_of_year;
   double dmsec = 20 * 30 / 3533.0 * 1000;
 
   for (i = 0; i < COUNTS_PER_FRAME_FOR_WTH_GP; ++i)
   {
     msec_of_year = whf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTH_GP;
-    msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
-    printf("%s", filename);
-    printf(",dp1");
-    printf(",%d", whr.year);
-    printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
-    printf(",%d", whf.dp1[i]);
-    putchar('\n');
-
-    printf("%s", filename);
-    printf(",dp6");
-    printf(",%d", whr.year);
-    printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
-    printf(",%d", whf.dp6[i]);
-    putchar('\n');
-
-    printf("%s", filename);
-    printf(",dp11");
-    printf(",%d", whr.year);
-    printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
-    printf(",%d", whf.dp11[i]);
-    putchar('\n');
-
-    printf("%s", filename);
-    printf(",dp16");
-    printf(",%d", whr.year);
-    printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
-    printf(",%d", whf.dp16[i]);
-    putchar('\n');
-
-    printf("%s", filename);
-    printf(",dp_status");
-    printf(",%d", whr.year);
-    printf(",%d,%02d:%02d:%02d.%06d", doy, hh, mm, ss, ms * 1000);
-    printf(",%d", whf.status[i]);
-    putchar('\n');
+    print_gp(fps_write[FILEPOINTER_GP],
+             17,
+             filename,
+             whr.year,
+             msec_of_year,
+             i * dmsec / COUNTS_PER_FRAME_FOR_WTH_GP,
+             whf.dp1[i], whf.dp6[i], whf.dp11[i], whf.dp16[i], whf.status[i]);
   }
 }
 
@@ -74,13 +51,16 @@ int main(int argc, char **argv)
 {
 
   // Generic variables
-  FILE *f = NULL;
+  FILE *fp_read = NULL;
+  FILE *fps_write[SIZE_FILEPOINTERS];
   size_t r;
   char filename[PATH_MAX + 1];
+  char dirname[PATH_MAX + 1];
+  char pathname[PATH_MAX + 1];
   int error_flag;
   int i;
-  uint32_t doy, hh, mm, ss, ms;
   char *basec, *bname;
+  long file_offset;
 
   // ----------------------------------------
   // Apollo related variables
@@ -98,18 +78,21 @@ int main(int argc, char **argv)
   // ----------------------------------------
   // Command line option
   // ----------------------------------------
-  if (argc != 2)
+  if (argc != 3)
   {
     usage(argv[0]);
     return EXIT_FAILURE;
   }
-  SET_ARG(filename, 1, PATH_MAX);
+  SET_ARG(dirname, 1, PATH_MAX);
+  SET_ARG(filename, 2, PATH_MAX);
+
+  mkdir(dirname, S_IRWXU);
 
   // ----------------------------------------
   // PROGRAM MAIN
   // ----------------------------------------
-  f = fopen(filename, "rb");
-  if (f == NULL)
+  fp_read = fopen(filename, "rb");
+  if (fp_read == NULL)
   {
     log_printf(LOG_ERROR, __FILE__, __LINE__,
                "no such file: %s", filename);
@@ -128,9 +111,18 @@ int main(int argc, char **argv)
   bname = basename(basec);
 
   // ----------------------------------------
+  // Prepare File Pointers
+  // ----------------------------------------
+  sprintf(pathname, "%s/%s_gp.csv", dirname, bname);
+  fps_write[FILEPOINTER_GP] = fopen(pathname, "w");
+
+  sprintf(pathname, "%s/%s_meta.csv", dirname, bname);
+  fps_write[FILEPOINTER_META] = fopen(pathname, "w");
+
+  // ----------------------------------------
   // Frame registration
   // ----------------------------------------
-  while ((r = fread(record, sizeof(unsigned char), SIZE_HEADER, f)) > 0)
+  while ((r = fread(record, sizeof(unsigned char), SIZE_HEADER, fp_read)) > 0)
   {
     if (r != SIZE_HEADER)
     {
@@ -149,7 +141,7 @@ int main(int argc, char **argv)
       goto main_finish;
     }
 
-    r = fread(header, sizeof(unsigned char), SIZE_HEADER, f);
+    r = fread(header, sizeof(unsigned char), SIZE_HEADER, fp_read);
     if (r != SIZE_HEADER)
     {
       log_printf(LOG_ERROR, __FILE__, __LINE__,
@@ -184,7 +176,8 @@ int main(int argc, char **argv)
 
     // Read Frame
     fmax = 0;
-    while ((r = fread(frame, sizeof(unsigned char), SIZE_FRAME, f)) > 0)
+    file_offset = ftell(fp_read);
+    while ((r = fread(frame, sizeof(unsigned char), SIZE_FRAME, fp_read)) > 0)
     {
       if (fmax >= max_wth_frame)
       {
@@ -194,16 +187,20 @@ int main(int argc, char **argv)
       }
       whf[fmax] = binary2wth_frame(whr, frame);
       error_flag = check_wth_frame(whf[fmax], whr.year);
-      wth_csv_output(bname, whr, whf[fmax]);
+      wth_csv_output(fps_write,
+                     bname, file_offset,
+                     fmax, i,
+                     whr, whf[fmax]);
     }
     fmax++;
+    file_offset = ftell(fp_read);
   }
 
 main_finish:
-  if (f)
+  if (fp_read)
   {
-    fclose(f);
-    f = NULL;
+    fclose(fp_read);
+    fp_read = NULL;
   }
 
   if (whf)

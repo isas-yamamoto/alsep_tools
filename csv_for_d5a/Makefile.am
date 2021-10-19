@@ -6,7 +6,7 @@ pse2csv_for_d5a_LDADD = ../lib/libalsep.a
 wtn2csv_for_d5a_SOURCES = wtn2csv_for_d5a.c csv.c
 wtn2csv_for_d5a_LDADD = ../lib/libalsep.a
 
-wth2csv_for_d5a_SOURCES = wth2csv_for_d5a.c
+wth2csv_for_d5a_SOURCES = wth2csv_for_d5a.c csv.c
 wth2csv_for_d5a_LDADD = ../lib/libalsep.a
 
 AM_CPPFLAGS = -I$(top_srcdir)/lib
