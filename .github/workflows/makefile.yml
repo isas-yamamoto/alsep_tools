@@ -10,19 +10,31 @@ jobs:
   build:
     strategy:
       matrix:
-        container:
-        - 'centos:centos7'
+        os:
+        - ['centos', 'centos:centos7']
+        - ['centos', 'centos:centos8']
+        - ['ubuntu', 'ubuntu:18.04']
+        - ['ubuntu', 'ubuntu:20.04']
     runs-on: ubuntu-latest
-    container: ${{ matrix.container }}
+    container: ${{ matrix.os[1] }}
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: install packages on centos 7
-      if: ${{ matrix.container == 'centos:centos7' }}
+    - name: install packages on ${{ matrix.os[1] }}
+      if: ${{ matrix.os[0] == 'centos' }}
       run: |
         yum update -y
-        yum install -y gcc autoconf automake libtool make git postgresql-devel
+        yum install -y gcc autoconf automake libtool make git
+
+    - name: install packages on ${{ matrix.os[1] }}
+      if: ${{ matrix.os[0] == 'ubuntu' }}
+      run: |
+        apt-get update -y
+        apt-get install -y gcc autoconf automake libtool make git
+
+    - name: autotool reconfigure
+      run: autoreconf -i -f
     
     - name: configure
       run: ./configure
