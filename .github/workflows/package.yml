@@ -24,7 +24,9 @@ jobs:
           sudo yum install gcc autoconf automake libtool make git postgresql-devel
 
       - name: Checkout Repository
-        uses: action/checkout@feature/csv_output
+        uses: action/checkout@@v2
+        with:
+          ref:feature/csv_output
 
       - name: Configure and make
         run: |
