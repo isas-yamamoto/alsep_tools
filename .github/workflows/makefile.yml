@@ -1,0 +1,37 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ feature/csv_output ]
+  pull_request:
+    branches: [ feature/csv_output ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        container:
+        - 'centos:centos7'
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install packages on centos 7
+      if: ${{ matrix.container == 'centos:centos7' }}
+      run: |
+        yum update -y
+        yum install -y gcc autoconf automake libtool make git postgresql-devel
+    
+    - name: configure
+      run: ./configure
+      
+    - name: Install dependencies
+      run: make
+      
+    - name: Run check
+      run: make check
+      
+    - name: Run distcheck
+      run: make distcheck
