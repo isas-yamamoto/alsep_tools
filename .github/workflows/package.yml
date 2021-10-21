@@ -11,18 +11,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [centos-7]
+        label: centos7
         include:
-          - os: centos-7
+          - label: centos7
             target: linux
-            test-docker-image: centos:centos7
+            container: centos:centos7
           
     steps:
       - name: Checkout Repository
         uses: action/checkout@feature/csv_output
 
       - name: Install packages on CentOS 7
-        if: ${{ matrix.os == 'centos7' }}
+        if: ${{ matrix.label == 'centos7' }}
         run: |
           sudo yum update -y
           sudo yum install -y
