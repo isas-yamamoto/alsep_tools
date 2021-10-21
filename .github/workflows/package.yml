@@ -11,22 +11,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        label: centos7
-        include:
-          - label: centos7
-            target: linux
-            container: centos:centos7
+        container:
+        - 'centos:centos7'
+      runs-on: ubuntu-latest
+      container: ${{ matrix.container }}
           
     steps:
-      - name: Checkout Repository
-        uses: action/checkout@feature/csv_output
-
       - name: Install packages on CentOS 7
-        if: ${{ matrix.label == 'centos7' }}
+        if: ${{ matrix.container == 'centos:centos7' }}
         run: |
           sudo yum update -y
           sudo yum install -y
           sudo yum install gcc autoconf automake libtool make git postgresql-devel
+
+      - name: Checkout Repository
+        uses: action/checkout@feature/csv_output
 
       - name: Configure and make
         run: |
