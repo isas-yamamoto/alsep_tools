@@ -93,7 +93,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_pse2csv_OBJECTS = pse2csv.$(OBJEXT) csv.$(OBJEXT)
 pse2csv_OBJECTS = $(am_pse2csv_OBJECTS)
 pse2csv_DEPENDENCIES = ../lib/libalsep.a
-am_wth2csv_OBJECTS = wth2csv.$(OBJEXT)
+am_wth2csv_OBJECTS = wth2csv.$(OBJEXT) csv.$(OBJEXT)
 wth2csv_OBJECTS = $(am_wth2csv_OBJECTS)
 wth2csv_DEPENDENCIES = ../lib/libalsep.a
 am_wtn2csv_OBJECTS = wtn2csv.$(OBJEXT) csv.$(OBJEXT)
@@ -249,13 +249,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pse2csv_SOURCES = pse2csv.c csv.c
+pse2csv_SOURCES = pse2csv.c csv.c csv.h
 pse2csv_LDADD = ../lib/libalsep.a
-wtn2csv_SOURCES = wtn2csv.c csv.c
+wtn2csv_SOURCES = wtn2csv.c csv.c csv.h
 wtn2csv_LDADD = ../lib/libalsep.a
-wth2csv_SOURCES = wth2csv.c
+wth2csv_SOURCES = wth2csv.c csv.c csv.h
 wth2csv_LDADD = ../lib/libalsep.a
 AM_CPPFLAGS = -I$(top_srcdir)/lib
+EXTRA_DIST = csv.h
 all: all-am
 
 .SUFFIXES:
