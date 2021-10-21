@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.71])
+AC_PREREQ([2.69])
 AC_INIT([alsep_tools],[0.5],[yukio@planeta.sci.isas.jaxa.jp])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_HEADERS([config.h])
@@ -14,9 +14,6 @@ AC_PROG_CXX
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_INCLUDES_DEFAULT
-AC_PROG_EGREP
-
 AC_CHECK_HEADERS([limits.h stdint.h stdlib.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
