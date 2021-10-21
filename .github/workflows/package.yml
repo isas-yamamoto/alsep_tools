@@ -7,14 +7,13 @@ on:
 jobs:
   build:
     name: Build on ${{ matrix.build }} version
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         container:
         - 'centos:centos7'
-      runs-on: ubuntu-latest
-      container: ${{ matrix.container }}
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
           
     steps:
       - name: Install packages on CentOS 7
