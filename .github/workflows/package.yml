@@ -1,0 +1,40 @@
+name: Multi-platform compilation
+on:
+  push:
+    branches:
+      - feature/csv_output
+
+jobs:
+  build:
+    name: Build on ${{ matrix.build }} version
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [centos-7]
+        include:
+          - os: centos-7
+            target: linux
+            test-docker-image: centos:centos7
+          
+    steps:
+      - name: Checkout Repository
+        uses: action/checkout@feature/csv_output
+
+      - name: Install packages on CentOS 7
+        if: ${{ matrix.os == 'centos7' }}
+        run: |
+          sudo yum update -y
+          sudo yum install -y
+          sudo yum install gcc autoconf automake libtool make git postgresql-devel
+
+      - name: Configure and make
+        run: |
+          ./configure
+          make
+        working-directory: alsep_tools
+
+      - name: Install
+        run: |
+          sudo make install
+        working-directory: alsep_tools
