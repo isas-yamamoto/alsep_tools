@@ -11,4 +11,4 @@ wth2csv_for_d5a_LDADD = ../lib/libalsep.a
 
 AM_CPPFLAGS = -I$(top_srcdir)/lib
 
-EXTRA_DIST = csv.h
+EXTRA_DIST = pse2csv_for_d5a_print.h wtn2csv_for_d5a_print.h wth2csv_for_d5a_print.h
