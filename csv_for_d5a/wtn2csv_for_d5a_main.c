@@ -19,16 +19,16 @@
 #include "wtn.h"
 #include "error.h"
 #include "util.h"
-#include "csv.h"
+#include "wtn2csv_for_d5a_print.h"
 
 void usage(const char *cmd)
 {
   fprintf(stderr, "usage: %s dirname wtnfile\n", cmd);
 }
 
-void wtn_csv_output(FILE *fps_write[SIZE_FILEPOINTERS],
+void wtn_csv_output(FILE *fps_write[SIZE_WTN_FILEPOINTERS],
                     const char *filename, long file_offset,
-                    int record_no, int frame_no,
+                    int frame_no, int active_id,
                     wtn_record wnr, wtn_frame wnf)
 {
   int i;
@@ -36,76 +36,62 @@ void wtn_csv_output(FILE *fps_write[SIZE_FILEPOINTERS],
   double dmsec = 64 * 10 / 1060.0 * 1000;
   int apollo_station[] = {-1, 12, 15, 16, 14, 17};
 
-  print_meta(fps_write[FILEPOINTER_META],
-             filename,
-             file_offset,
-             record_no,
-             frame_no,
-             wnf.frame_count,
-             wnr.year,
-             wnf.msec_of_year,
-             0,
-             wnf.process_flag, wnr.error_flag, wnf.error_flag);
+  print_wtn_meta(
+      fps_write[WTN_FILEPOINTER_META],
+      filename,
+      file_offset,
+      0,
+      frame_no, active_id,
+      &wnr, &wnf);
 
   if (wnf.alsep_package_id != ALSEP_PACKAGE_ID_APOLLO_17)
   {
     for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_SP; ++i)
     {
       msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_SP;
-      print_spz(fps_write[FILEPOINTER_SPZ],
-                apollo_station[wnf.alsep_package_id],
+      print_wtn_spz(fps_write[WTN_FILEPOINTER_SPZ],
                 filename,
-                wnr.year,
-                msec_of_year,
+                file_offset,
                 i * dmsec / 32,
-                wnf.spz[i]);
+                &wnr, &wnf, i);
     }
 
     for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_LP; ++i)
     {
       msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_LP;
-      print_lpxyz(fps_write[FILEPOINTER_LPXYZ],
-                  apollo_station[wnf.alsep_package_id],
+      print_wtn_lpxyz(fps_write[WTN_FILEPOINTER_LPXYZ],
                   filename,
-                  wnr.year,
-                  msec_of_year,
+                  file_offset,
                   i * dmsec / 4,
-                  wnf.lpx[i], wnf.lpy[i], wnf.lpz[i]);
+                  &wnr, &wnf, i);
     }
 
     if (wnf.frame_count % 2 == 0)
     {
-      print_tdxy(fps_write[FILEPOINTER_TDXY],
-                 apollo_station[wnf.alsep_package_id],
+      print_wtn_tdxy(fps_write[WTN_FILEPOINTER_TDXY],
                  filename,
-                 wnr.year,
-                 msec_of_year,
+                 file_offset,
                  0,
-                 wnf.TidX, wnf.TidY);
+                 &wnr, &wnf);
     }
     else
     {
-      print_tdzi(fps_write[FILEPOINTER_TDZI],
-                 apollo_station[wnf.alsep_package_id],
+      print_wtn_tdzi(fps_write[WTN_FILEPOINTER_TDZI],
                  filename,
-                 wnr.year,
-                 msec_of_year,
+                 file_offset,
                  0,
-                 wnf.TidZ, wnf.InstT);
+                 &wnr, &wnf);
     }
   }
   else
   {
     for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_LSG; ++i)
     {
-      msec_of_year = wnf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTN_LSG;
-      print_lsg(fps_write[FILEPOINTER_LSG],
-                apollo_station[wnf.alsep_package_id],
+      print_wtn_lsg(fps_write[WTN_FILEPOINTER_LSG],
                 filename,
-                wnr.year,
-                msec_of_year,
-                i * dmsec / 32,
-                wnf.lsg[i]);
+                file_offset,
+                dmsec * i / COUNTS_PER_FRAME_FOR_WTN_LSG,
+                &wnr, &wnf, i);
     }
   }
 }
@@ -115,7 +101,7 @@ int main(int argc, char **argv)
 
   // Generic variables
   FILE *fp_read;
-  FILE *fps_write[SIZE_FILEPOINTERS];
+  FILE *fps_write[SIZE_WTN_FILEPOINTERS];
   size_t r;
   char filename[PATH_MAX + 1];
   char dirname[PATH_MAX + 1];
@@ -180,22 +166,22 @@ int main(int argc, char **argv)
   // Prepare File Pointers
   // ----------------------------------------
   sprintf(pathname, "%s/%s_spz.csv", dirname, bname);
-  fps_write[FILEPOINTER_SPZ] = fopen(pathname, "w");
+  fps_write[WTN_FILEPOINTER_SPZ] = fopen(pathname, "w");
 
   sprintf(pathname, "%s/%s_lp.csv", dirname, bname);
-  fps_write[FILEPOINTER_LPXYZ] = fopen(pathname, "w");
+  fps_write[WTN_FILEPOINTER_LPXYZ] = fopen(pathname, "w");
 
   sprintf(pathname, "%s/%s_tdxy.csv", dirname, bname);
-  fps_write[FILEPOINTER_TDXY] = fopen(pathname, "w");
+  fps_write[WTN_FILEPOINTER_TDXY] = fopen(pathname, "w");
 
   sprintf(pathname, "%s/%s_tdzi.csv", dirname, bname);
-  fps_write[FILEPOINTER_TDZI] = fopen(pathname, "w");
+  fps_write[WTN_FILEPOINTER_TDZI] = fopen(pathname, "w");
 
   sprintf(pathname, "%s/%s_lsg.csv", dirname, bname);
-  fps_write[FILEPOINTER_LSG] = fopen(pathname, "w");
+  fps_write[WTN_FILEPOINTER_LSG] = fopen(pathname, "w");
 
   sprintf(pathname, "%s/%s_meta.csv", dirname, bname);
-  fps_write[FILEPOINTER_META] = fopen(pathname, "w");
+  fps_write[WTN_FILEPOINTER_META] = fopen(pathname, "w");
 
   // ----------------------------------------
   // Frame registration

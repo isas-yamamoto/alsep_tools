@@ -45,6 +45,7 @@ int main(int argc, char** argv) {
   
   //initial value of Frame time error at last frame in one record
   uint64_t msec_of_year_fmax = 0;
+  int32_t prev_frame = -1;
 
   // ----------------------------------------
   // getopt
@@ -123,7 +124,7 @@ int main(int argc, char** argv) {
     pf[0] = binary2pse_frame(pr,&record[frame_offset]);
     pf[0].spz[0] = pf[0].spz[1];
     pf[0].time_diff = pf[0].msec_of_year - msec_of_year_fmax;
-    pf[0].prev_frame = -1;
+    pf[0].prev_frame = prev_frame;
     pf[0].process_flag = process_flag | FLAG_TOP_OF_RECORD | FLAG_FIRST_DATA_COPIED;
     pf[0].error_flag = check_pse_frame(pf[0], pr.apollo_station, pr.year);
     if (pf[0].error_flag >= 0x0100) {
@@ -172,6 +173,7 @@ int main(int argc, char** argv) {
       print_pg_copy(id, rec_offset+frame_offset, size_part, pr,pf[i]);
     }
     msec_of_year_fmax = pf[i-1].msec_of_year;
+    prev_frame = pf[i-1].frame_count;
     rec_offset = ftell(f);
     printf("\\.\n");
   }
