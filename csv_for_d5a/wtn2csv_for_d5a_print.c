@@ -15,7 +15,7 @@ void print_wtn_record_header(FILE *f, wtn_record *wnr)
         fprintf(f, ",%d", wnr->active_station[i]);
     }
     fprintf(f, ",%d,%d,%d,%" PRId64,
-        wnr->num_asta, wnr->original_id, wnr->year, wnr->first_msec);
+            wnr->num_asta, wnr->original_id, wnr->year, wnr->first_msec);
 }
 
 void print_wtn_frame_header(FILE *f, wtn_frame *wnf)
@@ -47,7 +47,8 @@ void print_headers(
     wtn_record *wnr, wtn_frame *wnf)
 {
     char date_string[SIZE_TIME_STRING];
-    fprintf(f, "%s,%ld,", filename, file_offset);
+    int32_t ret;
+    fprintf(f, "%s,%"PRId64",", filename, file_offset);
     print_wtn_record_header(f, wnr);
     fprintf(f, ",");
     print_wtn_frame_header(f, wnf);

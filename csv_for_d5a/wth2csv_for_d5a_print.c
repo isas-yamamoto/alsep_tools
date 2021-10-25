@@ -45,7 +45,7 @@ void print_headers(
     wth_record *whr, wth_frame *whf)
 {
     char date_string[SIZE_TIME_STRING];
-    fprintf(f, "%s,%ld,", filename, file_offset);
+    fprintf(f, "%s,%"PRId64",", filename, file_offset);
     print_wth_record_header(f, whr);
     fprintf(f, ",");
     print_wth_frame_header(f, whf);

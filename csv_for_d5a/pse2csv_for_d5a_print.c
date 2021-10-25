@@ -42,7 +42,7 @@ void print_headers(
     pse_record *pr, pse_frame *pf)
 {
   char date_string[SIZE_TIME_STRING];
-  fprintf(f, "%s,%ld,", filename, file_offset);
+  fprintf(f, "%s,%" PRId64 ",", filename, file_offset);
   print_pse_record_header(f, pr);
   fprintf(f, ",");
   print_pse_frame_header(f, pf);
