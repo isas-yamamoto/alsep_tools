@@ -65,7 +65,7 @@ int32_t doy_to_date_string(uint32_t year, uint32_t doy, char date_string[11]) {
     month += 1;
     doy -= days_in_month[i];
   }
-  if (month > 12) {
+  if (doy < 1 || month > 12) {
     return FALSE;
   }
 
