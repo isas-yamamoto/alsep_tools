@@ -14,11 +14,7 @@
 #define FALSE 0
 #endif
 
-// 12345678901234567890123456
-// YYYY-mm-dd HH:MM:SS.ffffff
-#define SIZE_DATE_STRING 27
-
-void msec_of_year_to_date(int64_t msec_of_year, uint32_t *doy, uint32_t* hh, uint32_t *mm, uint32_t *ss, uint32_t *ms );
+void msec_of_year_to_date(int64_t msec_of_year, uint32_t *doy, uint32_t* hh, uint32_t *mm, uint32_t *ss, uint32_t *ms);
 int is_numeric(const char *s);
 char* intary2str(int *data, size_t size, char *str, size_t maxstr);
 ssize_t filesize(const char *filename);

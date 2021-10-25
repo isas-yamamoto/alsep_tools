@@ -1,0 +1,49 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ feature/csv_output ]
+  pull_request:
+    branches: [ feature/csv_output ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+        - ['centos', 'centos:centos7']
+        - ['centos', 'centos:centos8']
+        - ['ubuntu', 'ubuntu:18.04']
+        - ['ubuntu', 'ubuntu:20.04']
+    runs-on: ubuntu-latest
+    container: ${{ matrix.os[1] }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install packages on ${{ matrix.os[1] }}
+      if: ${{ matrix.os[0] == 'centos' }}
+      run: |
+        yum update -y
+        yum install -y gcc autoconf automake libtool make git
+
+    - name: install packages on ${{ matrix.os[1] }}
+      if: ${{ matrix.os[0] == 'ubuntu' }}
+      run: |
+        apt-get update -y
+        apt-get install -y gcc autoconf automake libtool make git
+
+    - name: autotool reconfigure
+      run: autoreconf -i -f
+    
+    - name: configure
+      run: ./configure
+      
+    - name: Install dependencies
+      run: make
+      
+    - name: Run check
+      run: make check
+      
+    - name: Run distcheck
+      run: make distcheck

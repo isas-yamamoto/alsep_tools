@@ -81,7 +81,7 @@ int check_pse_frame(pse_frame pf, int apollo_station, int year) {
   //! ARCHIVE TAPE DESCRIPTION DOCUMENT (JSC-09652)'
   //! 1.4.1.2.3 ALSEP Word 33 - Housekeeping
   if ( pf.hk > 255 ) {
-    error_flag |= ERROR_INVALID_VALUE;
+    error_flag |= ERROR_INVALID_HK;
   }
   
   //! these judgment using 10, 100 below is not so meaningful.

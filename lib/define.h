@@ -4,7 +4,7 @@
 #define SIZE_SQL         1024
 #define SIZE_FILEPATH    1024
 #define DATA_NONE        9999
-#define SIZE_TIME_STRING 24
+#define SIZE_TIME_STRING 27
 
 #define VALID_SYNC_CODE 1810U
 #define VALID_SYNC_CODE_WTH 59U

@@ -14,36 +14,43 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "define.h"
 #include "wth.h"
+#include "define.h"
 #include "error.h"
 #include "util.h"
-#include "csv.h"
+#include "wth2csv_for_d5a_print.h"
 
 void usage(const char *cmd)
 {
   fprintf(stderr, "usage: %s dirname wthfile\n", cmd);
 }
 
-void wth_csv_output(FILE *fps_write[SIZE_FILEPOINTERS],
+void wth_csv_output(FILE *fps_write[SIZE_WTH_FILEPOINTERS],
                     const char *filename, long file_offset,
-                    int record_no, int frame_no,
+                    int frame_no, int active_id,
                     wth_record whr, wth_frame whf)
 {
   int i;
   uint64_t msec_of_year;
   double dmsec = 20 * 30 / 3533.0 * 1000;
 
+  print_wth_meta(
+      fps_write[WTH_FILEPOINTER_META],
+      filename,
+      file_offset,
+      0,
+      frame_no, active_id,
+      &whr, &whf);
+
   for (i = 0; i < COUNTS_PER_FRAME_FOR_WTH_GP; ++i)
   {
     msec_of_year = whf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTH_GP;
-    print_gp(fps_write[FILEPOINTER_GP],
-             17,
+    print_wth_gp(fps_write[WTH_FILEPOINTER_GP],
              filename,
-             whr.year,
-             msec_of_year,
+             file_offset,
              i * dmsec / COUNTS_PER_FRAME_FOR_WTH_GP,
-             whf.dp1[i], whf.dp6[i], whf.dp11[i], whf.dp16[i], whf.status[i]);
+             &whr, &whf,
+             i);
   }
 }
 
@@ -52,7 +59,7 @@ int main(int argc, char **argv)
 
   // Generic variables
   FILE *fp_read = NULL;
-  FILE *fps_write[SIZE_FILEPOINTERS];
+  FILE *fps_write[SIZE_WTH_FILEPOINTERS];
   size_t r;
   char filename[PATH_MAX + 1];
   char dirname[PATH_MAX + 1];
@@ -115,10 +122,10 @@ int main(int argc, char **argv)
   // Prepare File Pointers
   // ----------------------------------------
   sprintf(pathname, "%s/%s_gp.csv", dirname, bname);
-  fps_write[FILEPOINTER_GP] = fopen(pathname, "w");
+  fps_write[WTH_FILEPOINTER_GP] = fopen(pathname, "w");
 
   sprintf(pathname, "%s/%s_meta.csv", dirname, bname);
-  fps_write[FILEPOINTER_META] = fopen(pathname, "w");
+  fps_write[WTH_FILEPOINTER_META] = fopen(pathname, "w");
 
   // ----------------------------------------
   // Frame registration
