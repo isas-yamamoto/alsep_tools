@@ -96,7 +96,6 @@ int32_t msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, double 
   }
   us = ms * 1000;
   us += us_offset;
-  printf("DEBUG1:%f\n", us);
 
   sprintf(date_string, "%s %02d:%02d:%02d.%06.0f", date, hh, mm, ss, us);
   return TRUE;
