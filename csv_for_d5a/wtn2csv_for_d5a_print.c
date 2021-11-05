@@ -43,7 +43,7 @@ void print_headers(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     wtn_record *wnr, wtn_frame *wnf)
 {
     char date_string[SIZE_TIME_STRING];
@@ -60,7 +60,7 @@ void print_wtn_spz(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     wtn_record *wnr,
     wtn_frame *wnf,
     int32_t index)
@@ -75,7 +75,7 @@ void print_wtn_lsg(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     wtn_record *wnr,
     wtn_frame *wnf,
     int32_t index)
@@ -90,7 +90,7 @@ void print_wtn_lpxyz(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     wtn_record *wnr,
     wtn_frame *wnf,
     int32_t index)
@@ -103,7 +103,7 @@ void print_wtn_tdxy(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     wtn_record *wnr,
     wtn_frame *wnf)
 {
@@ -115,7 +115,7 @@ void print_wtn_tdzi(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     wtn_record *wnr,
     wtn_frame *wnf)
 {
@@ -127,7 +127,7 @@ void print_wtn_meta(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     int32_t frame_no,
     int32_t active_id,
     wtn_record *wnr,

@@ -31,7 +31,7 @@ void wth_csv_output(FILE *fps_write[SIZE_WTH_FILEPOINTERS],
                     wth_record whr, wth_frame whf)
 {
   int i;
-  uint64_t msec_of_year;
+  double us_offset;
   double dmsec = 20 * 30 / 3533.0 * 1000;
 
   print_wth_meta(
@@ -44,11 +44,11 @@ void wth_csv_output(FILE *fps_write[SIZE_WTH_FILEPOINTERS],
 
   for (i = 0; i < COUNTS_PER_FRAME_FOR_WTH_GP; ++i)
   {
-    msec_of_year = whf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_WTH_GP;
+    us_offset = dmsec * i / COUNTS_PER_FRAME_FOR_WTH_GP * 1000;
     print_wth_gp(fps_write[WTH_FILEPOINTER_GP],
              filename,
              file_offset,
-             i * dmsec / COUNTS_PER_FRAME_FOR_WTH_GP,
+             us_offset,
              &whr, &whf,
              i);
   }

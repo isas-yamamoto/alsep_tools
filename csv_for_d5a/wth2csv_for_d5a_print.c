@@ -41,7 +41,7 @@ void print_headers(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     wth_record *whr, wth_frame *whf)
 {
     char date_string[SIZE_TIME_STRING];
@@ -57,7 +57,7 @@ void print_wth_gp(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     wth_record *whr,
     wth_frame *whf,
     int32_t index)
@@ -72,7 +72,7 @@ void print_wth_meta(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     int32_t frame_no,
     int32_t active_id,
     wth_record *whr,

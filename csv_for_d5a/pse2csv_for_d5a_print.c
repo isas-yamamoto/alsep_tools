@@ -38,7 +38,7 @@ void print_headers(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     pse_record *pr, pse_frame *pf)
 {
   char date_string[SIZE_TIME_STRING];
@@ -54,7 +54,7 @@ void print_pse_spz(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     pse_record *pr,
     pse_frame *pf,
     int32_t index)
@@ -69,7 +69,7 @@ void print_pse_lpxyz(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     pse_record *pr,
     pse_frame *pf,
     int32_t index)
@@ -82,7 +82,7 @@ void print_pse_tdxy(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     pse_record *pr,
     pse_frame *pf)
 {
@@ -94,7 +94,7 @@ void print_pse_tdzi(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     pse_record *pr,
     pse_frame *pf)
 {
@@ -106,7 +106,7 @@ void print_pse_meta(
     FILE *f,
     const char *filename,
     int64_t file_offset,
-    uint32_t us_offset,
+    double us_offset,
     int32_t record_no,
     int32_t frame_no,
     pse_record *pr,

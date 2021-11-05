@@ -33,7 +33,7 @@ void pse_csv_output(FILE *fps_write[SIZE_PSE_FILEPOINTERS],
                     pse_record pr, pse_frame pf)
 {
   int i;
-  uint64_t msec_of_year;
+  double us_offset;
   double dmsec = 64 * 10 / 1060.0 * 1000;
   print_pse_meta(
       fps_write[PSE_FILEPOINTER_META],
@@ -47,12 +47,12 @@ void pse_csv_output(FILE *fps_write[SIZE_PSE_FILEPOINTERS],
   {
     for (i = 0; i < COUNTS_PER_FRAME_FOR_PSE_SP; ++i)
     {
-      msec_of_year = pf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_PSE_SP;
+      us_offset = dmsec * i / COUNTS_PER_FRAME_FOR_PSE_SP * 1000;
       print_pse_spz(
           fps_write[PSE_FILEPOINTER_SPZ],
           filename,
           file_offset,
-          i * dmsec / 32,
+          us_offset,
           &pr, &pf,
           i);
     }
@@ -60,12 +60,12 @@ void pse_csv_output(FILE *fps_write[SIZE_PSE_FILEPOINTERS],
 
   for (i = 0; i < COUNTS_PER_FRAME_FOR_PSE_LP; ++i)
   {
-    msec_of_year = pf.msec_of_year + dmsec * i / COUNTS_PER_FRAME_FOR_PSE_LP;
+    us_offset = dmsec * i / COUNTS_PER_FRAME_FOR_PSE_LP * 1000;
     print_pse_lpxyz(
         fps_write[PSE_FILEPOINTER_LPXYZ],
         filename,
         file_offset,
-        i * dmsec / 4,
+        us_offset,
         &pr, &pf,
         i);
   }
