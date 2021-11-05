@@ -35,7 +35,7 @@ void wtn_csv_output(FILE *fps_write[SIZE_WTN_FILEPOINTERS],
   uint64_t msec_of_year;
   double dmsec = 64 * 10 / 1060.0 * 1000;
   int apollo_station[] = {-1, 12, 15, 16, 14, 17};
-  uint32_t us_offset;
+  double us_offset;
 
   print_wtn_meta(
       fps_write[WTN_FILEPOINTER_META],
@@ -50,6 +50,7 @@ void wtn_csv_output(FILE *fps_write[SIZE_WTN_FILEPOINTERS],
     for (i = 0; i < COUNTS_PER_FRAME_FOR_WTN_SP; ++i)
     {
       us_offset = dmsec * i / COUNTS_PER_FRAME_FOR_WTN_SP * 1000;
+      printf("DEBUG0:%f\n", us_offset);
       print_wtn_spz(fps_write[WTN_FILEPOINTER_SPZ],
                 filename,
                 file_offset,

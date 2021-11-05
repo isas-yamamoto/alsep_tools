@@ -83,8 +83,9 @@ int32_t doy_to_date_string(uint32_t year, uint32_t doy, char date_string[11]) {
  * @param[out] date_string date_string
  * @return TRUE if date conversion is success. Otherwise, FALSE.
  */
-int32_t msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, uint32_t us_offset, char date_string[SIZE_TIME_STRING] ) {
-  uint32_t doy, hh, mm, ss, ms, us;
+int32_t msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, double us_offset, char *date_string) {
+  uint32_t doy, hh, mm, ss, ms;
+  double us;
   char date[11]; /* YYYY-mm-dd */
   int32_t ret;
   msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
@@ -95,8 +96,9 @@ int32_t msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, uint32_
   }
   us = ms * 1000;
   us += us_offset;
+  printf("DEBUG1:%f\n", us);
 
-  sprintf(date_string, "%s %02d:%02d:%02d.%06d", date, hh, mm, ss, us);
+  sprintf(date_string, "%s %02d:%02d:%02d.%06.0f", date, hh, mm, ss, us);
   return TRUE;
 }
 
