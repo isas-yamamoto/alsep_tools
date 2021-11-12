@@ -12,6 +12,37 @@
 #include "util.h"
 
 /*!
+ * @brief convert microseconds of year to doy and time
+ *
+ * @param[in] usec_of_year microseconds of year
+ * @param[out] doy day of year
+ * @param[out] hh hours (0-23)
+ * @param[out] mm minutes (0-59)
+ * @param[out] ss seconds (0-59)
+ * @param[out] us microseconds (0-999)
+ * @attention minimum value of msec_of_year is 8,640,000,000[msec],
+ *  the minimum value of doy output is 1.
+ */
+void usec_of_year_to_date(double usec_of_year,
+                          uint32_t *doy, uint32_t *hh, uint32_t *mm, uint32_t *ss, double *us)
+{
+  uint32_t doy_rem, hh_rem;
+  uint32_t sec_of_year = (uint32_t)(usec_of_year / 1.0e6);
+
+  *us = usec_of_year - sec_of_year*1.0e6;
+
+  *doy = (uint32_t)(sec_of_year / 86400);
+  doy_rem = (uint32_t)(sec_of_year % 86400);
+
+  *hh = doy_rem / 3600U;
+  hh_rem = doy_rem % 3600U;
+
+  *mm = hh_rem / 60U;
+  *ss = hh_rem % 60U;
+}
+
+
+/*!
  * @brief 年単位の通算ミリ秒を年単位の通算日(DOY)と時刻に変換する
  *
  * @param[in] msec_of_year 年単位の通算ミリ秒
@@ -88,14 +119,14 @@ int32_t msec_of_year_to_date_string(uint32_t year, int64_t msec_of_year, double 
   double us;
   char date[11]; /* YYYY-mm-dd */
   int32_t ret;
-  msec_of_year_to_date(msec_of_year, &doy, &hh, &mm, &ss, &ms);
+  double usec_of_year = msec_of_year;
+  usec_of_year = usec_of_year * 1.0e3 + us_offset;
+  usec_of_year_to_date(usec_of_year, &doy, &hh, &mm, &ss, &us);
   ret = doy_to_date_string(year, doy, date);
   if (ret == FALSE) {
     memset(date_string, 0, SIZE_TIME_STRING);
     return ret;
   }
-  us = ms * 1000;
-  us += us_offset;
 
   sprintf(date_string, "%s %02d:%02d:%02d.%06.0f", date, hh, mm, ss, us);
   return TRUE;
